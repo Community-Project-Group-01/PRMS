@@ -75,7 +75,7 @@ npm run dev
 This will start:
 
 - **Backend**: http://localhost:5000
-- **Frontend**: http://localhost:3000
+- **Frontend**: http://localhost:5173
 
 ### Individual Servers
 
@@ -93,37 +93,125 @@ npm run client
 
 ## 📁 Project Structure
 
-```
-PRMS/
-├── package.json              # Root package with scripts
-├── README.md                 # This file
-├── server/                   # Backend (Express + MongoDB)
-│   ├── index.js             # Main server file
-│   ├── .env                 # Server environment variables
-│   ├── package.json         # Server dependencies
-│   ├── routes/              # API routes
-│   │   ├── auth.js          # Authentication routes
-│   │   └── users.js         # User management routes
-│   └── models/              # Database models
-│       └── User.js          # User schema with validation
-└── client/                  # Frontend (React)
-    ├── .env                 # Client environment variables
-    ├── public/              # Static files
-    ├── src/                 # React source code
-    │   ├── App.js           # Main App component
-    │   ├── App.css          # App styles
-    │   └── index.js         # React entry point
-    └── package.json         # React dependencies
-```
+````
+healthcare-center/
+│
+├── backend/                 # Express + MongoDB server
+│   ├── config/              # Configuration files
+│   │   ├── db.js            # MongoDB connection
+│   │   ├── keys.js          # Secrets, JWT keys, etc.
+│   │   └── logger.js        # Audit logging setup
+│   │
+│   ├── middleware/          # Middlewares
+│   │   ├── authMiddleware.js    # Role-based access control
+│   │   ├── errorMiddleware.js   # Error handling
+│   │   └── auditMiddleware.js   # Action logging
+│   │
+│   ├── models/              # MongoDB models
+│   │   ├── User.js              # Admin, Doctor, Pharmacist, Student
+│   │   ├── Student.js           # Student details (non-medical)
+│   │   ├── MedicalRecord.js     # SOAP notes, diagnosis, history
+│   │   ├── Prescription.js      # Drugs prescribed
+│   │   ├── Inventory.js         # Drug stock
+│   │   └── AuditLog.js          # System logs
+│   │
+│   ├── routes/              # API endpoints
+│   │   ├── authRoutes.js        # Login, Register
+│   │   ├── adminRoutes.js       # Student/Doctor registration, queue
+│   │   ├── doctorRoutes.js      # Consultation, SOAP, prescriptions
+│   │   ├── pharmacistRoutes.js  # Dispense, close prescriptions
+│   │   ├── inventoryRoutes.js   # Inventory management
+│   │   └── notificationRoutes.js# Notifications service
+│   │
+│   ├── controllers/         # Logic for each route
+│   │   ├── authController.js
+│   │   ├── adminController.js
+│   │   ├── doctorController.js
+│   │   ├── pharmacistController.js
+│   │   ├── inventoryController.js
+│   │   └── notificationController.js
+│   │
+│   ├── utils/               # Helper functions
+│   │   ├── tokenUtils.js        # JWT handling
+│   │   ├── emailUtils.js        # Email/SMS notifications (optional)
+│   │   └── validation.js        # Input validations
+│   │
+│   ├── server.js            # Entry point for backend
+│   └── package.json
+│
+├── frontend/                # React + Tailwind app
+│   ├── public/              # Static assets
+│   │   └── index.html
+│   │
+│   ├── src/
+│   │   ├── assets/          # Images, logos
+│   │   ├── components/      # Reusable UI components
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── Sidebar.jsx
+│   │   │   └── NotificationBell.jsx
+│   │   │
+│   │   ├── pages/           # Page components
+│   │   │   ├── Admin/
+│   │   │   │   ├── RegisterStudent.jsx
+│   │   │   │   ├── RegisterDoctor.jsx
+│   │   │   │   ├── QueueManagement.jsx
+│   │   │   │   └── Inventory.jsx
+│   │   │   │
+│   │   │   ├── Doctor/
+│   │   │   │   ├── PatientDashboard.jsx
+│   │   │   │   ├── ConsultationForm.jsx
+│   │   │   │   ├── SOAPForm.jsx
+│   │   │   │   └── PrescriptionForm.jsx
+│   │   │   │
+│   │   │   ├── Pharmacist/
+│   │   │   │   ├── PrescriptionList.jsx
+│   │   │   │   ├── DispenseForm.jsx
+│   │   │   │   └── ClosePrescription.jsx
+│   │   │   │
+│   │   │   ├── Student/
+│   │   │   │   ├── Profile.jsx
+│   │   │   │   └── MedicalHistory.jsx
+│   │   │   │
+│   │   │   ├── Auth/
+│   │   │   │   ├── Login.jsx
+│   │   │   │   └── Register.jsx
+│   │   │   │
+│   │   │   └── Dashboard.jsx   # Role-based dashboard
+│   │   │
+│   │   ├── context/         # Global state management
+│   │   │   ├── AuthContext.js
+│   │   │   └── NotificationContext.js
+│   │   │
+│   │   ├── services/        # API calls
+│   │   │   ├── api.js           # Axios instance
+│   │   │   ├── adminService.js
+│   │   │   ├── doctorService.js
+│   │   │   ├── pharmacistService.js
+│   │   │   └── inventoryService.js
+│   │   │
+│   │   ├── App.jsx          # Main App
+│   │   ├── index.js
+│   │   └── routes.js        # Role-based routes
+│   │
+│   └── package.json
+│
+├── docs/                    # Documentation
+│   ├── requirements.md
+│   ├── design.md
+│   └── api-docs.md
+│
+├── .gitignore
+├── README.md
+
 
 ## 🔧 Available Scripts
 
 ### Root Level Scripts
 
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run server` - Start only the backend server
+- `cd client && npm run dev` - Start only the frontend server
+- `cd server && npm run dev` - Start only the backend server
 - `npm run client` - Start only the frontend server
-- `npm run build` - Build React app for production
+- `cd client && npm run build` - Build React app for production
 - `npm run install-all` - Install all dependencies for both client and server
 
 ### Server Scripts
@@ -169,7 +257,7 @@ PRMS/
   createdAt: Date,
   updatedAt: Date
 }
-```
+````
 
 ## 🔐 Security Features
 
