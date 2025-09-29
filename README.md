@@ -108,8 +108,8 @@ healthcare-center/
 │   │   └── auditMiddleware.js   # Action logging
 │   │
 │   ├── models/              # MongoDB models
-│   │   ├── User.js              # Admin, Doctor, Pharmacist, Student
-│   │   ├── Student.js           # Student details (non-medical)
+│   │   ├── User.js              # Admin, Doctor, Pharmacist, Patient
+│   │   ├── Patient.js           # Patient details (non-medical)
 │   │   ├── MedicalRecord.js     # SOAP notes, diagnosis, history
 │   │   ├── Prescription.js      # Drugs prescribed
 │   │   ├── Inventory.js         # Drug stock
@@ -117,7 +117,7 @@ healthcare-center/
 │   │
 │   ├── routes/              # API endpoints
 │   │   ├── authRoutes.js        # Login, Register
-│   │   ├── adminRoutes.js       # Student/Doctor registration, queue
+│   │   ├── adminRoutes.js       # Patient/Doctor registration, queue
 │   │   ├── doctorRoutes.js      # Consultation, SOAP, prescriptions
 │   │   ├── pharmacistRoutes.js  # Dispense, close prescriptions
 │   │   ├── inventoryRoutes.js   # Inventory management
@@ -152,7 +152,7 @@ healthcare-center/
 │   │   │
 │   │   ├── pages/           # Page components
 │   │   │   ├── Admin/
-│   │   │   │   ├── RegisterStudent.jsx
+│   │   │   │   ├── RegisterPatient.jsx
 │   │   │   │   ├── RegisterDoctor.jsx
 │   │   │   │   ├── QueueManagement.jsx
 │   │   │   │   └── Inventory.jsx
@@ -168,7 +168,7 @@ healthcare-center/
 │   │   │   │   ├── DispenseForm.jsx
 │   │   │   │   └── ClosePrescription.jsx
 │   │   │   │
-│   │   │   ├── Student/
+│   │   │   ├── Patient/
 │   │   │   │   ├── Profile.jsx
 │   │   │   │   └── MedicalHistory.jsx
 │   │   │   │
