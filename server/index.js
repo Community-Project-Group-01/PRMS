@@ -1,15 +1,28 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
+// server.js
 require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+const { connectDB } = require("./config/db");
 
 const app = express();
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// ---------------------- Middleware ----------------------
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || "*",
+  credentials: true,
+}));
+app.use(express.json({ limit: "10kb" }));
+app.use(helmet());
+app.use(compression());
 
-// Routes
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+// ---------------------- Routes ----------------------
 app.get("/", (req, res) => {
   res.json({
     message: "Welcome to PRMS API",
@@ -18,28 +31,49 @@ app.get("/", (req, res) => {
   });
 });
 
-// API Routes
+// API routes
 app.use("/api/auth", require("./routes/auth"));
 app.use("/api/users", require("./routes/users"));
 
-// Database connection
-const connectDB = async () => {
+// ---------------------- Error Handling ----------------------
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
+app.use((err, req, res, next) => {
+  console.error("Error:", err.message);
+  res.status(err.statusCode || 500).json({
+    error: err.message || "Internal Server Error",
+  });
+});
+
+// ---------------------- Database & Server ----------------------
+const PORT = process.env.PORT || 5000;
+
+(async () => {
   try {
-    await mongoose.connect(
-      process.env.MONGODB_URI || "mongodb://localhost:27017/prms"
+    await connectDB();
+    const server = app.listen(PORT, () =>
+      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
     );
-    console.log("✅ Connected to MongoDB");
-  } catch (error) {
-    console.error("❌ MongoDB connection error:", error);
+
+    // Graceful shutdown
+    process.on("SIGTERM", () => {
+      console.log("SIGTERM received, shutting down gracefully...");
+      server.close(() => console.log("Process terminated"));
+    });
+
+    process.on("unhandledRejection", (err) => {
+      console.error("UNHANDLED REJECTION", err);
+      server.close(() => process.exit(1));
+    });
+
+    process.on("uncaughtException", (err) => {
+      console.error("UNCAUGHT EXCEPTION", err);
+      process.exit(1);
+    });
+  } catch (err) {
+    console.error("Failed to connect DB", err);
     process.exit(1);
   }
-};
-
-// Connect to database
-connectDB();
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📡 API available at http://localhost:${PORT}`);
-});
+})();
