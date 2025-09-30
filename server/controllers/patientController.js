@@ -5,6 +5,7 @@ const { Patient } = require("../models/Patient");
 const { generatePassword } = require("../utils/generatePassword");
 const { generateToken } = require("../utils/generateToken");
 const { sendMail } = require("../utils/mailer");
+const mongoose = require("mongoose");
 
 const registerPatient = async (req, res) => {
     try {
@@ -88,7 +89,7 @@ Password: ${plainPassword}
         return res.status(201).json({
             success: true,
             message: "Patient registered successfully, credentials sent via email",
-            patient: {
+            data: {
                 id: newPatient._id,
                 name,
                 email,
@@ -103,5 +104,60 @@ Password: ${plainPassword}
     }
 };
 
-module.exports = { registerPatient };
+const getAllPatients = async (req, res) => {
+    try {
+        const { page = 1, limit = 10 } = req.query;
+
+        const patients = await Patient.find()
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .populate({ path: "user", select: "-password -__v" });
+
+        return res.status(200).json({
+            success: true,
+            message: "Patients fetched successfully",
+            data: patients
+        });
+    } catch (error) {
+        console.error("Error in getAllPatients:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
+
+const getPatientById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: "Invalid patient ID" });
+        }
+
+        const patient = await Patient.findById(id).populate({
+            path: "user",
+            select: "-password -__v"
+        });
+
+        if (!patient) {
+            return res.status(404).json({ success: false, message: "No patient found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Patient fetched successfully",
+            data: patient
+        });
+    } catch (error) {
+        console.error("Error in getPatientById:", error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error"
+        });
+    }
+};
+
+
+module.exports = { registerPatient, getAllPatients, getPatientById };
 
