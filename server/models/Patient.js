@@ -14,7 +14,7 @@ const patientSchema = new mongoose.Schema(
         },
         patientType: {
             type: String,
-            enum: ["Student", "Public", "Staff"],
+            enum: ["student", "public", "staff"],
             required: true,
         },
         allergies: {
@@ -31,6 +31,7 @@ const patientSchema = new mongoose.Schema(
         },
         dob: {
             type: Date,
+            required: true
         },
     },
     { timestamps: true }

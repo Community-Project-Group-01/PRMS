@@ -6,6 +6,8 @@ const helmet = require("helmet");
 const compression = require("compression");
 const morgan = require("morgan");
 const { connectDB } = require("./config/db");
+const cookieParser = require("cookie-parser");
+const { patientRouter } = require("./routes/patientRoutes");
 
 const app = express();
 
@@ -17,6 +19,7 @@ app.use(cors({
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 app.use(compression());
+app.use(cookieParser())
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -32,7 +35,7 @@ app.get("/", (req, res) => {
 });
 
 // API routes
-app.use("/api/auth", require("./routes/auth"));
+app.use("/api/patient", patientRouter);
 app.use("/api/users", require("./routes/users"));
 
 // ---------------------- Error Handling ----------------------
