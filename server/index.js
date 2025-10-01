@@ -8,6 +8,8 @@ const morgan = require("morgan");
 const { connectDB } = require("./config/db");
 const cookieParser = require("cookie-parser");
 const { patientRouter } = require("./routes/patientRoutes");
+const { doctorRouter } = require("./routes/doctorRoutes");
+const { userRouter } = require("./routes/userRoutes");
 
 const app = express();
 
@@ -36,7 +38,8 @@ app.get("/", (req, res) => {
 
 // API routes
 app.use("/api/patient", patientRouter);
-app.use("/api/users", require("./routes/users"));
+app.use("/api/doctor", doctorRouter);
+app.use("/api/user", userRouter);
 
 // ---------------------- Error Handling ----------------------
 app.use((req, res) => {
