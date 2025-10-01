@@ -42,7 +42,7 @@ const registerPatient = async (req, res) => {
         }
 
         // Check if email or NIC already exists
-        const existingPatient = await Patient.findOne({ $or: [{ email }, { nic }] });
+        const existingPatient = await User.findOne({ $or: [{ email }, { nic }] });
         if (existingPatient) {
             return res.status(409).json({ success: false, message: "Email or NIC already registered" });
         }
@@ -103,6 +103,85 @@ Password: ${plainPassword}
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+const updatePatient = async (req, res) => {
+    try {
+        const patientId = req.user._id.toString();
+
+        const {
+            name,
+            email,
+            contact,
+            address,
+            password
+        } = req.body;
+
+        // Check if patient exists
+        const patient = await Patient.findOne({ user: patientId }).populate("user");
+
+        if (!patient) {
+            return res.status(404).json({ success: false, message: "Patient not found" });
+        }
+
+
+        // Email validation
+        if (email && !emailValidator(email)) {
+            return res.status(400).json({ success: false, message: "Invalid email format" });
+        }
+
+        // Mobile number validation
+        if (contact && !mobileNumberValidator(contact)) {
+            return res.status(400).json({ success: false, message: "Invalid contact number" });
+        }
+
+
+        // Email uniqueness check
+        if (email) {
+            const existingUser = await User.findOne({ email, _id: { $ne: patient.user._id } });
+            if (existingUser) {
+                return res.status(409).json({ success: false, message: "Email already registered" });
+            }
+        }
+
+        // === Update User fields ===
+        if (name) patient.user.name = name;
+        if (email) patient.user.email = email;
+
+        // Update password if provided
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            patient.user.password = hashedPassword;
+        }
+
+        await patient.user.save();
+
+        // === Update Patient fields ===
+        if (contact) patient.contact = contact;
+        if (address) patient.address = address;
+
+        await patient.save();
+
+        return res.status(200).json({
+            success: true,
+            message: "Patient updated successfully",
+            data: {
+                user: {
+                    id: patient.user._id,
+                    name: patient.user.name,
+                    email: patient.user.email,
+
+                },
+                patient: {
+                    id: patient._id,
+                    contact: patient.contact,
+                    address: patient.address
+                }
+            }
+        });
+    } catch (error) {
+        console.error("Error in updatePatient:", error.message);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+};
 
 const getAllPatients = async (req, res) => {
     try {
@@ -159,5 +238,5 @@ const getPatientById = async (req, res) => {
 };
 
 
-module.exports = { registerPatient, getAllPatients, getPatientById };
+module.exports = { registerPatient, getAllPatients, getPatientById, updatePatient };
 
