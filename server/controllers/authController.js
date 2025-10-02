@@ -24,4 +24,20 @@ const loginUser = async (req, res) => {
         return res.status(500).json({ success: false, message: "Server error" });
     }
 }
-module.exports = { loginUser }
+
+const logout = async (req, res) => {
+    try {
+        res.clearCookie("jwt", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            path: "/"
+        });
+
+        res.status(200).json({ message: "Logout Successful" });
+    } catch (error) {
+        console.log(`Error in Logout Controller: ${error}`);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+module.exports = { loginUser, logout }
