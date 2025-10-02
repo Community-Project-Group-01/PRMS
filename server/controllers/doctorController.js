@@ -102,6 +102,8 @@ Password: ${plainPassword}
 const updateDoctor = async (req, res) => {
     try {
         const doctorId = req.user._id.toString();
+        console.log(doctorId);
+
         const {
             name,
             email,
@@ -114,6 +116,8 @@ const updateDoctor = async (req, res) => {
 
         // Check if doctor exists
         const doctor = await Doctor.findOne({ user: doctorId }).populate("user");
+        console.log("sr", doctor);
+
         if (!doctor) {
             return res.status(404).json({ success: false, message: "Doctor not found" });
         }
