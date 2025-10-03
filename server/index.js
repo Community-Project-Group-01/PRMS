@@ -10,6 +10,7 @@ const cookieParser = require("cookie-parser");
 const { patientRouter } = require("./routes/patientRoutes");
 const { doctorRouter } = require("./routes/doctorRoutes");
 const { userRouter } = require("./routes/userRoutes");
+const { medicalRecordRouter } = require("./routes/medicalRecordRoutes");
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.get("/", (req, res) => {
 app.use("/api/patient", patientRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
+app.use("/api/med", medicalRecordRouter);
 
 // ---------------------- Error Handling ----------------------
 app.use((req, res) => {
