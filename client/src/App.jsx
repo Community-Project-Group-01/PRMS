@@ -1,12 +1,14 @@
 import React from "react";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
+import PatientForm from "./components/forms/PatientForm";
 
 const App = () => {
   return (
     <div>
       <div className="max-w-7xl mx-auto px-4">
         <Navbar />
+        <PatientForm />
       </div>
       <Footer />
     </div>
