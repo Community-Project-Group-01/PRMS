@@ -1,6 +1,8 @@
 import React from "react";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
+import DoctorForm from "./components/forms/DoctorForm";
+
 
 const App = () => {
   return (
