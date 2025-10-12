@@ -59,11 +59,15 @@ const PatientForm = () => {
   return (
     <div
       className="min-h-screen flex items-center justify-center p-6"
-      style={{ backgroundColor: "var(--color-primary-dark)" }}
+      style={{ backgroundColor: "var(--color-white)" }}
     >
       <div
         className="w-full max-w-2xl rounded-2xl shadow-lg p-8"
-        style={{ backgroundColor: "var(--color-white)" }}
+        style={{
+          backgroundColor: "var(--color-white)",
+          boxShadow:
+            "0 6px 20px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)",
+        }}
       >
         <h2
           className="text-3xl font-semibold text-center mb-6"
