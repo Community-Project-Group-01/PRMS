@@ -14,10 +14,11 @@ import Button from "./Button";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 import api from "../../api/client";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, navigate } = useAppContext();
+  const { setUser, user, navigate } = useAppContext();
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: FaChartPie },
@@ -34,18 +35,26 @@ const Navbar = () => {
     setIsMobileMenuOpen(false);
   };
 
-  const navigateToLogin = () => {
-    if (!user) {
-      navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const res = await api.post("/api/user/logout");
+      const data = res.data;
+      console.log("data", data);
+
+      if (data.success) {
+        setUser(null);
+        toast.success(data.message || "logout successfull");
+        navigate("/login");
+      } else {
+        toast.error("Something went Wrong");
+      }
+    } catch (error) {
+      toast.error(error.message);
     }
   };
 
-  useEffect(() => {
-    navigateToLogin();
-  }, []);
-
   return (
-    <nav className="bg-white text-primary-dark sticky top-0 z-40">
+    <nav className=" text-primary-dark sticky top-0 z-40 p-3 backdrop-blur-xl">
       <div className="mx-auto">
         <div className="flex justify-between items-center h-16">
           {/* Brand & Mobile Menu */}
@@ -76,14 +85,14 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           {user && (
-            <nav className="hidden md:flex items-center space-x-1">
+            <nav className="hidden md:flex items-center gap-2 space-x-1">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
                   <Link
                     key={item.href}
                     to={item.href}
-                    className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200">
+                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200">
                     {Icon && <Icon className="w-4 h-4" />}
                     <span>{item.label}</span>
                   </Link>
@@ -108,6 +117,7 @@ const Navbar = () => {
               </div>
 
               <Button
+                onClick={handleLogout}
                 variant="primary"
                 size="small"
                 className="hover:bg-primary-dark cursor-pointer"
