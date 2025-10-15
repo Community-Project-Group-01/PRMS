@@ -18,7 +18,13 @@ const loginUser = async (req, res) => {
             return res.status(401).json({ success: false, message: "Incorrect password" })
         }
         generateToken(user.id, res)
-        return res.status(200).json({ success: true, message: "Login successfull" })
+        return res.status(200).json({
+            success: true, message: "Login successfull", data: {
+                email: user.email,
+                name: user.name,
+                role: user.role
+            }
+        })
     } catch (error) {
         console.error("Error in loginUser:", error.message);
         return res.status(500).json({ success: false, message: "Server error" });
@@ -34,7 +40,7 @@ const logout = async (req, res) => {
             path: "/"
         });
 
-        res.status(200).json({ message: "Logout Successful" });
+        res.status(200).json({ success: true, message: "Logout Successful" });
     } catch (error) {
         console.log(`Error in Logout Controller: ${error}`);
         res.status(500).json({ error: "Internal Server Error" });
