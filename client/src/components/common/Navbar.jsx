@@ -13,12 +13,11 @@ import {
 import Button from "./Button";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
-import api from "../../api/client";
-import toast from "react-hot-toast";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { setUser, user, navigate } = useAppContext();
+  const { userDetails, user, logout } = useAppContext();
+  console.log("ud", userDetails);
 
   const navItems = [
     { href: "/dashboard", label: "Dashboard", icon: FaChartPie },
@@ -36,21 +35,7 @@ const Navbar = () => {
   };
 
   const handleLogout = async () => {
-    try {
-      const res = await api.post("/api/user/logout");
-      const data = res.data;
-      console.log("data", data);
-
-      if (data.success) {
-        setUser(null);
-        toast.success(data.message || "logout successfull");
-        navigate("/login");
-      } else {
-        toast.error("Something went Wrong");
-      }
-    } catch (error) {
-      toast.error(error.message);
-    }
+    logout();
   };
 
   return (
@@ -112,7 +97,9 @@ const Navbar = () => {
                 </div>
                 <div className="text-sm text-primary-dark">
                   <p className="font-medium">{user.name}</p>
-                  <p className="text-xs text-primary-dark/70">Physician</p>
+                  <p className="text-xs text-primary-dark/70">
+                    {userDetails.userDetails.specialization}
+                  </p>
                 </div>
               </div>
 
@@ -160,7 +147,9 @@ const Navbar = () => {
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-primary-dark">{user.name}</p>
-                  <p className="text-sm text-primary-dark/70">Physician</p>
+                  <p className="text-sm text-primary-dark/70">
+                    {userDetails.userDetails.specialization}
+                  </p>
                 </div>
               </div>
             </nav>

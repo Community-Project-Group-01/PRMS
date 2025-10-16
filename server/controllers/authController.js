@@ -1,6 +1,8 @@
 const { User } = require("../models/User")
 const bcrypt = require("bcrypt")
 const { generateToken } = require("../utils/generateToken")
+const { Doctor } = require("../models/Doctor")
+const { Patient } = require("../models/Patient")
 
 
 const loginUser = async (req, res) => {
@@ -49,14 +51,41 @@ const logout = async (req, res) => {
 
 const authMe = async (req, res) => {
     try {
-        const user = req.user
+        const user = req.user;
         if (!user) {
-            return res.status(401).json({ success: false, message: "Not Authorised" })
+            return res.status(401).json({
+                success: false,
+                message: "Not Authorized",
+            });
         }
-        return res.status(200).json({ success: true, message: "User Authentication success", data: user })
+
+        let userDetails;
+
+        if (user.role === "doctor") {
+            userDetails = await Doctor.findOne({ user: user._id }).select("-__v -_id -user");
+        } else if (user.role === "patient") {
+            userDetails = await Patient.findOne({ user: user._id }).select("-__v -_id -user");
+        }
+
+        const safeUser = {
+            _id: user._id,
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        };
+
+        return res.status(200).json({
+            success: true,
+            message: "User authentication successful",
+            data: { ...safeUser, userDetails },
+        });
     } catch (error) {
         console.error(`Error in authMe Controller: ${error}`);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+        });
     }
-}
+};
+
 module.exports = { loginUser, logout, authMe }

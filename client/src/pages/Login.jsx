@@ -27,19 +27,20 @@ const Login = () => {
       const res = await api.post("/api/user/login", { email, password });
       const data = res.data;
       const user = data.data;
-      console.log("log data", data);
 
       if (data && data.success) {
-        await setUser(user);
+        setUser(user);
+        localStorage.setItem("user", JSON.stringify(user));
         toast.success(data.message || "Logged in successfully");
-
         navigate(`/dashboard/${user.role}`);
       } else {
         setUser(null);
+        localStorage.removeItem("user");
         toast.error((data && data.message) || "Invalid credentials");
       }
     } catch (error) {
       setUser(null);
+      localStorage.removeItem("user");
       const msg =
         error?.response?.data?.message || error.message || "Network Error";
       toast.error(msg);
