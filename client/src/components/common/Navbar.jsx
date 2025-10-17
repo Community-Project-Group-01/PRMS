@@ -1,13 +1,11 @@
 // components/layout/Navbar.jsx
 import React, { useEffect, useState } from "react";
 import {
-  FaUserInjured,
+  FaUser,
   FaHospital,
   FaSignOutAlt,
   FaBars,
   FaChartPie,
-  FaFile,
-  FaLaptopMedical,
   FaTimes,
 } from "react-icons/fa";
 import Button from "./Button";
@@ -17,13 +15,10 @@ import { useAppContext } from "../../context/AppContext";
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { userDetails, user, logout } = useAppContext();
-  console.log("ud", userDetails);
 
   const navItems = [
-    { href: "/dashboard", label: "Dashboard", icon: FaChartPie },
-    { href: "/patients", label: "Patients", icon: FaUserInjured },
-    { href: "/records", label: "Medical Records", icon: FaFile },
-    { href: "/appointments", label: "Appointments", icon: FaLaptopMedical },
+    { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
+    { href: `/profile/${user?.role}`, label: "Profile", icon: FaUser },
   ];
 
   const toggleMobileMenu = () => {
@@ -68,49 +63,48 @@ const Navbar = () => {
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          {user && (
-            <nav className="hidden md:flex items-center gap-2 space-x-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200">
-                    {Icon && <Icon className="w-4 h-4" />}
-                    <span>{item.label}</span>
-                  </Link>
-                );
-              })}
-            </nav>
-          )}
-
           {/* User Menu */}
           {user && (
-            <div className="flex items-center space-x-3">
-              <div className="hidden md:flex items-center space-x-3 bg-primary-dark/10 px-3 py-2 rounded-lg border border-primary-dark/20">
-                <div className="w-8 h-8 bg-primary-dark rounded-full flex items-center justify-center">
-                  <span className="text-sm font-semibold text-white">
-                    {user.role.charAt(0).toUpperCase()}
-                  </span>
+            // desktop navigation
+            <div className="flex gap-6">
+              <nav className="hidden md:flex items-center gap-2 space-x-1">
+                {navItems.map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      to={item.href}
+                      className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200">
+                      {Icon && <Icon className="w-4 h-4" />}
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
+              <div className="flex items-center space-x-3">
+                <div className="hidden md:flex items-center space-x-3 bg-primary-dark/10 px-3 py-2 rounded-lg border border-primary-dark/20">
+                  <div className="w-8 h-8 bg-primary-dark rounded-full flex items-center justify-center">
+                    <span className="text-sm font-semibold text-white">
+                      {user.role.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <div className="text-sm text-primary-dark">
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-xs text-primary-dark/70">
+                      {userDetails?.userDetails?.specialization}
+                    </p>
+                  </div>
                 </div>
-                <div className="text-sm text-primary-dark">
-                  <p className="font-medium">{user.name}</p>
-                  <p className="text-xs text-primary-dark/70">
-                    {userDetails.userDetails.specialization}
-                  </p>
-                </div>
-              </div>
 
-              <Button
-                onClick={handleLogout}
-                variant="primary"
-                size="small"
-                className="hover:bg-primary-dark cursor-pointer"
-                aria-label="Sign out">
-                <FaSignOutAlt className="w-4 h-4" />
-              </Button>
+                <Button
+                  onClick={handleLogout}
+                  variant="primary"
+                  size="small"
+                  className="hover:bg-primary-dark cursor-pointer"
+                  aria-label="Sign out">
+                  <FaSignOutAlt className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -148,7 +142,7 @@ const Navbar = () => {
                 <div className="flex-1">
                   <p className="font-medium text-primary-dark">{user.name}</p>
                   <p className="text-sm text-primary-dark/70">
-                    {userDetails.userDetails.specialization}
+                    {userDetails?.userDetails?.specialization}
                   </p>
                 </div>
               </div>

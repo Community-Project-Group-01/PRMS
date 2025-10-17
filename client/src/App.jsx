@@ -9,13 +9,14 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   const { user } = useAppContext();
 
   return (
     <div className="bg-secondary/1">
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="w-full max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
         <Navbar />
         <Toaster position="top-center" reverseOrder={false} />
         <Routes>
@@ -24,11 +25,7 @@ const App = () => {
             path="/login"
             element={
               user ? (
-                user.role === "admin" ? (
-                  <Navigate to="/dashboard/admin" replace />
-                ) : (
-                  <Navigate to="/dashboard/doctor" replace />
-                )
+                <Navigate to={`/dashboard/${user?.role}`} replace />
               ) : (
                 <Login />
               )
@@ -40,8 +37,9 @@ const App = () => {
 
           {/* PROTECTED ROUTES */}
           <Route element={<ProtectedRoutes />}>
-            <Route path="/dashboard/doctor" element={<DoctorDashboard />} />
-            <Route path="/dashboard/admin" element={<AdminDashboard />} />
+            <Route path="/dashboard/:role" element={<Dashboard />}>
+              <Route path="/dashboard/:role/:section" element={<Dashboard />} />
+            </Route>
           </Route>
 
           {/* ERROR PAGE */}

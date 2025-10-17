@@ -44,7 +44,7 @@ export const AppContextProvider = ({ children }) => {
 
       if (data.success) {
         setUser(null);
-        localStorage.removeItem("user");
+        localStorage.clear();
         toast.success(data.message || "Logout successful");
         navigate("/login");
       } else {
