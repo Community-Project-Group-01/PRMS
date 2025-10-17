@@ -4,7 +4,10 @@ import {
   FaPhone,
   FaEnvelope,
   FaMapMarkerAlt,
+  FaUser,
+  FaChartPie,
 } from "react-icons/fa";
+import { useAppContext } from "../../context/AppContext";
 
 const FooterSection = ({ title, children }) => (
   <div>
@@ -31,11 +34,10 @@ const ContactItem = ({ icon: Icon, children }) => (
 );
 
 const Footer = () => {
+  const { user } = useAppContext();
   const quickLinks = [
-    { href: "/patients", label: "Patient Portal" },
-    { href: "/records", label: "Medical Records" },
-    { href: "/appointments", label: "Book Appointment" },
-    { href: "/emergency", label: "Emergency Services" },
+    { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
+    { href: `/profile/${user?.role}`, label: "Profile", icon: FaUser },
   ];
 
   const legalLinks = [
