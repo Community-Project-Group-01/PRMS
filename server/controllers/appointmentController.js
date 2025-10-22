@@ -2,7 +2,7 @@ const Appointment = require("../models/Appoinment")
 const { Doctor } = require("../models/Doctor")
 const { Patient } = require("../models/Patient")
 
-
+// create Appointment
 const createAppoinment = async (req, res) => {
     try {
         const { doctorId, patientId } = req.body
@@ -29,4 +29,77 @@ const createAppoinment = async (req, res) => {
     }
 }
 
-module.exports = { createAppoinment }
+// get all appointments of a Doctor
+const getAppointmentsOfDoctor = async (req, res) => {
+    try {
+        const { status } = req.query;
+        console.log("status", status);
+
+        const userId = req.user._id;
+
+        const doctor = await Doctor.findOne({ user: userId });
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        const query = { doctor: doctor._id };
+        if (status) query.status = status;
+
+        const myAppointments = await Appointment.find(query)
+            .populate("patient")
+            .lean();
+
+        if (!myAppointments.length) {
+            return res.status(404).json({ success: false, message: "No appointments found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Appointments fetched successfully",
+            data: myAppointments,
+        });
+    } catch (error) {
+        console.error("Error fetching doctor appointments:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+// update appointments state
+const updateAppointment = async (req, res) => {
+    try {
+        const { id: appointmentId } = req.params;
+        const { status } = req.body;
+
+        if (!status) {
+            return res.status(400).json({ success: false, message: "Status is required" });
+        }
+
+        const appointment = await Appointment.findByIdAndUpdate(
+            appointmentId,
+            { status },
+            { new: true }
+        );
+
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: "Appointment not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Appointment updated successfully",
+            data: appointment,
+        });
+    } catch (error) {
+        console.error("Error updating appointment:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+
+module.exports = { createAppoinment, getAppointmentsOfDoctor, updateAppointment }
