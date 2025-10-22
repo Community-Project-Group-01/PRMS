@@ -14,9 +14,9 @@ const createAppoinment = async (req, res) => {
         if (!patient) {
             return res.status(404).json({ success: false, message: "No Patient available" })
         }
-        const newAppointment = Appointment.create({
-            patient: patientId,
-            doctor: doctorId
+        const newAppointment = await Appointment.create({
+            patient: patient._id,
+            doctor: doctor._id
         })
         return res.status(200).json({ success: true, message: "Appoinment Success", data: newAppointment })
     }
