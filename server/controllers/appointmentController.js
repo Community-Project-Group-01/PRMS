@@ -101,5 +101,40 @@ const updateAppointment = async (req, res) => {
     }
 };
 
+// Get a specific appointment by ID
+const getAppointmentById = async (req, res) => {
+    try {
+        const { appointmentId } = req.params;
+        const userId = req.user._id;
 
-module.exports = { createAppoinment, getAppointmentsOfDoctor, updateAppointment }
+        const doctor = await Doctor.findOne({ user: userId });
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        const appointment = await Appointment.findOne({
+            _id: appointmentId,
+            doctor: doctor._id,
+        })
+            .populate("patient", "name email phone age gender")
+            .lean();
+
+        if (!appointment) {
+            return res.status(404).json({ success: false, message: "Appointment not found" });
+        }
+
+        return res.status(200).json({
+            success: true,
+            message: "Appointment fetched successfully",
+            data: appointment,
+        });
+    } catch (error) {
+        console.error("Error fetching appointment by ID:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};
+
+module.exports = { createAppoinment, getAppointmentsOfDoctor, updateAppointment, getAppointmentById }
