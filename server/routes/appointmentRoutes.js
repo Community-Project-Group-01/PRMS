@@ -6,7 +6,7 @@ const appointmentRouter = express.Router()
 
 appointmentRouter.post("/create", protectedRoutes, createAppoinment)
 appointmentRouter.get("/getMyAppointments", protectedRoutes, getAppointmentsOfDoctor)
-appointmentRouter.put("/:id", protectedRoutes, updateAppointment)
+appointmentRouter.put("/update", protectedRoutes, updateAppointment)
 appointmentRouter.get("/:id", protectedRoutes, getAppointmentById)
 
 module.exports = { appointmentRouter }

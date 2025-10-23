@@ -33,8 +33,6 @@ const createAppoinment = async (req, res) => {
 const getAppointmentsOfDoctor = async (req, res) => {
     try {
         const { status } = req.query;
-        console.log("status", status);
-
         const userId = req.user._id;
 
         const doctor = await Doctor.findOne({ user: userId });
@@ -46,11 +44,17 @@ const getAppointmentsOfDoctor = async (req, res) => {
         if (status) query.status = status;
 
         const myAppointments = await Appointment.find(query)
-            .populate("patient")
+            .populate({
+                path: "patient",
+                populate: {
+                    path: "user",
+                    select: "name email", // populate only name and email
+                },
+            })
             .lean();
 
         if (!myAppointments.length) {
-            return res.status(404).json({ success: false, message: "No appointments found" });
+            return res.status(200).json({ success: true, message: "No appointments found", data: [] });
         }
 
         return res.status(200).json({
@@ -70,8 +74,8 @@ const getAppointmentsOfDoctor = async (req, res) => {
 // update appointments state
 const updateAppointment = async (req, res) => {
     try {
-        const { id: appointmentId } = req.params;
-        const { status } = req.body;
+        // const { id: appointmentId } = req.params;
+        const { status, id: appointmentId } = req.body;
 
         if (!status) {
             return res.status(400).json({ success: false, message: "Status is required" });
@@ -109,7 +113,7 @@ const getAppointmentById = async (req, res) => {
 
         const doctor = await Doctor.findOne({ user: userId });
         if (!doctor) {
-            return res.status(404).json({ success: false, message: "Doctor not found" });
+            return res.status(404).json({ success: false, message: "Doctor not found", });
         }
 
         const appointment = await Appointment.findOne({
