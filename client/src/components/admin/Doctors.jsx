@@ -130,17 +130,6 @@ const Doctors = () => {
                 <div className="mt-4 flex justify-end">
                   <div className="mt-4 flex justify-end gap-3">
                     <Button
-                      onClick={() =>
-                        navigate(
-                          `/dashboard/admin/edit-doctor/${selectedDoctor._id}`
-                        )
-                      }
-                      className="bg-blue-500 hover:bg-blue-600 text-white"
-                    >
-                      Edit
-                    </Button>
-
-                    <Button
                       onClick={() => setSelectedDoctor(null)}
                       className="bg-gray-400 hover:bg-gray-500 text-white"
                     >
