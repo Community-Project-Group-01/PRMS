@@ -10,8 +10,8 @@ import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
 import Dashboard from "./pages/Dashboard";
-import AddDoctor from "./components/admin/AddDoctor";
 import EditDoctor from "./components/admin/EditDoctor";
+import DoctorForm from "./components/forms/DoctorForm";
 
 const App = () => {
   const { user } = useAppContext();
@@ -42,11 +42,7 @@ const App = () => {
             <Route path="/dashboard/:role" element={<Dashboard />}>
               <Route path="/dashboard/:role/:section" element={<Dashboard />} />
             </Route>
-            <Route path="/dashboard/:role/add-doctor" element={<AddDoctor />} />
-            <Route
-              path="/dashboard/admin/edit-doctor/:id"
-              element={<EditDoctor />}
-            />
+            <Route path="/dashboard/:role/add-doctor" element={<DoctorForm />} />
           </Route>
 
           {/* ERROR PAGE */}
