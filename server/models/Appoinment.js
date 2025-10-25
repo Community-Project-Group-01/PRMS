@@ -14,7 +14,7 @@ const appointmentSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ["Queue", "Consultant", "Closed"],
+            enum: ["Queue", "Consultation", "Closed"],
             default: "Queue",
         },
     },

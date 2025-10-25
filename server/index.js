@@ -13,18 +13,21 @@ const { userRouter } = require("./routes/userRoutes");
 const { medicalRecordRouter } = require("./routes/medicalRecordRoutes");
 const { prescriptionRouter } = require("./routes/prescriptionRoutes");
 const { appointmentRouter } = require("./routes/appointmentRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
 
 // ---------------------- Middleware ----------------------
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || "*",
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.CORS_ORIGIN || "*",
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 app.use(compression());
-app.use(cookieParser())
+app.use(cookieParser());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
@@ -46,6 +49,7 @@ app.use("/api/user", userRouter);
 app.use("/api/med", medicalRecordRouter);
 app.use("/api/prescription", prescriptionRouter);
 app.use("/api/appointment", appointmentRouter);
+app.use("/api/admin", adminRoutes);
 
 // ---------------------- Error Handling ----------------------
 app.use((req, res) => {
@@ -66,7 +70,9 @@ const PORT = process.env.PORT || 5000;
   try {
     await connectDB();
     const server = app.listen(PORT, () =>
-      console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`)
+      console.log(
+        `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+      )
     );
 
     // Graceful shutdown
