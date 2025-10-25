@@ -136,44 +136,131 @@ const Overview = () => {
           data={stats.charts.monthlyRecords}
         />
 
-        {/* Patient Type Distribution */}
+        {/* Patient Type Distribution - Pie Chart */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            Patient Types
+            Patient Types Distribution
           </h3>
-          <div className="space-y-3">
-            {stats.distributions.patientTypes.length > 0 ? (
-              stats.distributions.patientTypes.map((type, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-700 capitalize">
-                    {type._id}
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-24 bg-gray-200 rounded-full h-2">
-                      <div
-                        className="bg-blue-500 h-2 rounded-full"
-                        style={{
-                          width: `${
-                            (type.count / stats.totals.patients) * 100
-                          }%`,
-                        }}
-                      />
+          {stats.distributions.patientTypes.length > 0 ? (
+            <div className="flex flex-col lg:flex-row items-center gap-6">
+              {/* Pie Chart */}
+              <div className="relative w-48 h-48 flex-shrink-0">
+                <svg
+                  className="w-full h-full transform -rotate-90"
+                  viewBox="0 0 100 100"
+                >
+                  {(() => {
+                    let cumulativePercentage = 0;
+                    const colors = [
+                      "#3B82F6",
+                      "#10B981",
+                      "#F59E0B",
+                      "#EF4444",
+                      "#8B5CF6",
+                    ];
+
+                    return stats.distributions.patientTypes.map(
+                      (type, index) => {
+                        const percentage =
+                          (type.count / stats.totals.patients) * 100;
+                        const startAngle = (cumulativePercentage / 100) * 360;
+                        const endAngle =
+                          ((cumulativePercentage + percentage) / 100) * 360;
+
+                        const x1 =
+                          50 + 40 * Math.cos((startAngle * Math.PI) / 180);
+                        const y1 =
+                          50 + 40 * Math.sin((startAngle * Math.PI) / 180);
+                        const x2 =
+                          50 + 40 * Math.cos((endAngle * Math.PI) / 180);
+                        const y2 =
+                          50 + 40 * Math.sin((endAngle * Math.PI) / 180);
+
+                        const largeArcFlag = percentage > 50 ? 1 : 0;
+                        const pathData = [
+                          `M 50 50`,
+                          `L ${x1} ${y1}`,
+                          `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
+                          `Z`,
+                        ].join(" ");
+
+                        cumulativePercentage += percentage;
+
+                        return (
+                          <path
+                            key={index}
+                            d={pathData}
+                            fill={colors[index % colors.length]}
+                            className="hover:opacity-80 transition-opacity cursor-pointer"
+                          />
+                        );
+                      }
+                    );
+                  })()}
+                </svg>
+
+                {/* Center text */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.totals.patients}
                     </div>
-                    <span className="text-sm text-gray-600 w-8">
-                      {type.count}
-                    </span>
+                    <div className="text-xs text-gray-600">Total</div>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-4">
-                No patient data available
-              </p>
-            )}
-          </div>
+              </div>
+
+              {/* Legend */}
+              <div className="flex-1 space-y-3">
+                {stats.distributions.patientTypes.map((type, index) => {
+                  const percentage = (
+                    (type.count / stats.totals.patients) *
+                    100
+                  ).toFixed(1);
+                  const colors = [
+                    "#3B82F6",
+                    "#10B981",
+                    "#F59E0B",
+                    "#EF4444",
+                    "#8B5CF6",
+                  ];
+
+                  return (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div
+                          className="w-4 h-4 rounded-full"
+                          style={{
+                            backgroundColor: colors[index % colors.length],
+                          }}
+                        />
+                        <span className="text-sm font-medium text-gray-700 capitalize">
+                          {type._id}
+                        </span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {type.count}
+                        </span>
+                        <span className="text-xs text-gray-500 ml-1">
+                          ({percentage}%)
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center h-48">
+              <p className="text-gray-500">No patient data available</p>
+            </div>
+          )}
         </div>
       </div>
-
     </div>
   );
 };
