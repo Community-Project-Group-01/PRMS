@@ -83,7 +83,7 @@ Before running this application, make sure you have the following installed:
    **Client Environment** (`client/.env`):
 
    ```env
-   REACT_APP_API_URL=http://localhost:5000/api
+   VITE_API_URL="http://localhost:5000"
    ```
 
 3. **Start MongoDB**
@@ -102,15 +102,17 @@ Before running this application, make sure you have the following installed:
 **Backend only:**
 
 ```bash
+cd server
 npm install
-npm run server
+npm run dev
 ```
 
 **Frontend only:**
 
 ```bash
+cd client
 npm install
-npm run client
+npm run dev
 ```
 
 ## 📁 Project Structure
