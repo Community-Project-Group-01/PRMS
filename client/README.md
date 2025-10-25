@@ -1,16 +1,279 @@
-# React + Vite
+# PRMS Frontend - React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+The frontend application for the Patient Record Management System (PRMS), built with React 19, Vite, and Tailwind CSS. This modern healthcare management interface provides role-based dashboards for administrators, doctors, and patients.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 🎨 **Modern UI/UX**
 
-## React Compiler
+- **React 19** with latest hooks and context API
+- **Vite** for lightning-fast development and building
+- **Tailwind CSS** for responsive, modern design
+- **React Icons** for consistent iconography
+- **React Hot Toast** for user notifications
+- **React Router DOM** for client-side routing
 
-The React Compiler is not enabled on this template. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🏥 **Healthcare Dashboards**
 
-## Expanding the ESLint configuration
+#### **Admin Dashboard**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Overview Section**: Comprehensive analytics with interactive pie charts
+- **Patient Management**: View and manage patient profiles
+- **Doctor Management**: Manage doctor profiles and specializations
+- **System Statistics**: Real-time data visualization
+- **Quick Actions**: Easy access to common tasks
+
+#### **Doctor Dashboard**
+
+- **Patient Overview**: View assigned patients
+- **Medical Records**: Create and manage SOAP notes
+- **Appointments**: Schedule and manage patient appointments
+- **Prescription Management**: Generate and track prescriptions
+
+#### **Patient Dashboard**
+
+- **Profile Management**: Update personal information
+- **Medical History**: View medical records and prescriptions
+- **Appointment Booking**: Schedule appointments with doctors
+
+### 📊 **Data Visualization**
+
+- **Interactive Pie Charts**: Patient type distribution with hover effects
+- **Statistics Cards**: Key metrics with trend indicators
+- **Monthly Charts**: Medical records activity over time
+- **Recent Activity Feed**: Real-time system updates
+
+## 🛠 Technology Stack
+
+### **Core Technologies**
+
+- **React 19.1.1** - Latest React with modern features
+- **Vite 7.1.7** - Fast build tool and development server
+- **Tailwind CSS 4.1.14** - Utility-first CSS framework
+- **React Router DOM 7.9.3** - Client-side routing
+
+### **UI Components**
+
+- **React Icons 5.5.0** - Icon library
+- **React Hot Toast 2.6.0** - Toast notifications
+- **Axios 1.12.2** - HTTP client for API calls
+
+### **Development Tools**
+
+- **ESLint 9.36.0** - Code linting
+- **Vite Plugin React 5.0.3** - React support for Vite
+- **TypeScript Types** - Type definitions for React
+
+## 📁 Project Structure
+
+```
+client/
+├── public/
+│   └── index.html              # Main HTML template
+├── src/
+│   ├── api/
+│   │   └── client.js           # Axios configuration
+│   ├── components/
+│   │   ├── admin/              # Admin-specific components
+│   │   │   ├── Overview.jsx    # Analytics dashboard with pie charts
+│   │   │   ├── Patients.jsx    # Patient management
+│   │   │   ├── Doctors.jsx     # Doctor management
+│   │   │   └── Inventory.jsx   # Inventory management
+│   │   ├── doctor/             # Doctor-specific components
+│   │   │   ├── Overview.jsx    # Doctor dashboard
+│   │   │   ├── Patients.jsx    # Patient list for doctors
+│   │   │   └── Appointments.jsx # Appointment management
+│   │   ├── common/             # Shared components
+│   │   │   ├── Navbar.jsx      # Navigation bar
+│   │   │   ├── Sidebar.jsx     # Dashboard sidebar
+│   │   │   ├── Footer.jsx      # Footer component
+│   │   │   ├── Button.jsx      # Reusable button
+│   │   │   └── Spinner.jsx     # Loading spinner
+│   │   │   └── forms/          # Form components
+│   │   │       ├── AdminForm.jsx
+│   │   │       ├── DoctorForm.jsx
+│   │   │       └── PatientForm.jsx
+│   ├── pages/                  # Page components
+│   │   ├── Login.jsx           # Authentication page
+│   │   ├── Dashboard.jsx       # Main dashboard router
+│   │   ├── ErrorPage.jsx       # Error handling
+│   │   ├── admin/
+│   │   │   └── AdminDashboard.jsx
+│   │   └── doctor/
+│   │       └── DoctorDashboard.jsx
+│   ├── context/
+│   │   └── AppContext.jsx       # Global state management
+│   ├── middleware/
+│   │   └── ProtectedRoutes.jsx # Route protection
+│   ├── utils/
+│   │   └── validator.js         # Client-side validation
+│   ├── App.jsx                 # Main application component
+│   ├── main.jsx               # Application entry point
+│   └── index.css              # Global styles
+├── package.json
+├── vite.config.js             # Vite configuration
+└── eslint.config.js           # ESLint configuration
+```
+
+## 🚀 Getting Started
+
+### **Prerequisites**
+
+- Node.js (v14 or higher)
+- npm or yarn
+
+### **Installation**
+
+1. **Install dependencies:**
+
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables:**
+   Create a `.env` file in the client directory:
+
+   ```env
+   VITE_API_URL=http://localhost:5000/api
+   ```
+
+3. **Start development server:**
+
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser:**
+   Navigate to `http://localhost:5173` (or the port shown in terminal)
+
+### **Available Scripts**
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## 🎨 UI Components
+
+### **Admin Overview Dashboard**
+
+- **Statistics Cards**: Total patients, doctors, medical records, prescriptions
+- **Interactive Pie Chart**: Patient type distribution with hover effects
+- **Monthly Charts**: Medical records activity over time
+- **Recent Activity**: Latest medical records with patient/doctor info
+- **Quick Actions**: Easy access to common administrative tasks
+
+### **Responsive Design**
+
+- **Mobile-First**: Optimized for all screen sizes
+- **Tailwind CSS**: Utility-first styling approach
+- **Component-Based**: Reusable UI components
+- **Accessibility**: WCAG compliant design patterns
+
+## 🔧 Configuration
+
+### **Vite Configuration**
+
+```javascript
+// vite.config.js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+export default defineConfig({
+  plugins: [react(), tailwindcss()],
+});
+```
+
+### **API Configuration**
+
+```javascript
+// src/api/client.js
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  withCredentials: true,
+});
+```
+
+## 🧪 Testing
+
+### **Manual Testing**
+
+1. **Login as Admin**: Test the overview dashboard with pie charts
+2. **Patient Management**: Browse and manage patient profiles
+3. **Doctor Management**: View doctor specializations
+4. **Responsive Design**: Test on different screen sizes
+
+### **Development Testing**
+
+- **Hot Reload**: Changes reflect immediately
+- **ESLint**: Code quality checks
+- **Console Logging**: Debug information for pie charts and API calls
+
+## 🚀 Deployment
+
+### **Production Build**
+
+```bash
+npm run build
+```
+
+### **Deploy to Static Hosting**
+
+- **Vercel**: Connect GitHub repository
+- **Netlify**: Drag and drop dist folder
+- **GitHub Pages**: Use GitHub Actions
+
+### **Environment Variables for Production**
+
+```env
+VITE_API_URL=https://your-api-domain.com/api
+```
+
+## 🐛 Troubleshooting
+
+### **Common Issues**
+
+1. **Port Already in Use**
+
+   ```bash
+   # Kill process using port 5173
+   npx kill-port 5173
+   ```
+
+2. **API Connection Issues**
+
+   - Check VITE_API_URL in .env file
+   - Verify backend server is running
+   - Check CORS configuration
+
+3. **Build Issues**
+   ```bash
+   # Clear cache and reinstall
+   rm -rf node_modules package-lock.json
+   npm install
+   ```
+
+## 📝 Development Notes
+
+- **React 19**: Uses latest React features and hooks
+- **Vite**: Fast development with HMR (Hot Module Replacement)
+- **Tailwind CSS**: Utility-first CSS framework
+- **Component Architecture**: Modular, reusable components
+- **State Management**: React Context API for global state
+- **Routing**: React Router for client-side navigation
+- **API Integration**: Axios for HTTP requests with credentials
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the ISC License.
