@@ -4,16 +4,47 @@ A comprehensive healthcare management system built with the MERN stack (MongoDB,
 
 ## 🚀 Features
 
-- **Role-Based Access Control**: Admin, Doctor, and Patient dashboards
-- **Patient Management**: Registration, profile management, and medical history tracking
+### 🏥 **Core Healthcare Features**
+
+- **Role-Based Access Control**: Admin, Doctor, and Patient dashboards with secure authentication
+- **Patient Management**: Complete patient lifecycle from registration to medical history tracking
 - **Doctor Management**: Doctor registration, specialization tracking, and availability management
-- **Medical Records**: SOAP (Subjective, Objective, Assessment, Plan) note system
-- **Prescription Management**: Digital prescription creation and management
-- **Secure Authentication**: JWT-based authentication with password hashing
-- **Email Notifications**: Automated credential delivery via email
+- **Medical Records**: SOAP (Subjective, Objective, Assessment, Plan) note system with comprehensive documentation
+- **Prescription Management**: Digital prescription creation, management, and tracking
+- **Appointment System**: Schedule and manage patient appointments
+- **Vital Signs Tracking**: Temperature, blood pressure, pulse, and respiration monitoring
+- **Allergy Management**: Patient allergy tracking and alerts
+
+### 📊 **Analytics & Reporting**
+
+- **Admin Dashboard**: Comprehensive system overview with statistics and analytics
+- **Patient Type Distribution**: Visual pie charts showing student, public, and staff demographics
+- **Monthly Trends**: Medical records and activity tracking over time
+- **Recent Activity Feed**: Real-time updates on system activities
+- **Quick Actions**: Easy access to common administrative tasks
+
+### 🔐 **Security & Authentication**
+
+- **JWT Authentication**: Secure token-based authentication with HTTP-only cookies
+- **Password Hashing**: bcrypt encryption for secure password storage
+- **Role-Based Access**: Granular permissions for different user types
+- **Input Validation**: Comprehensive validation for Sri Lankan NIC, mobile numbers, and email
+- **Audit Logging**: Complete system activity tracking and logging
+- **CORS Protection**: Secure cross-origin resource sharing configuration
+
+### 🎨 **User Experience**
+
 - **Responsive Design**: Modern UI with Tailwind CSS and React 19
-- **Data Validation**: Comprehensive input validation for Sri Lankan NIC, mobile numbers, and email
-- **Audit Logging**: System activity tracking and logging
+- **Interactive Charts**: Beautiful pie charts and data visualizations
+- **Real-time Updates**: Live data updates and notifications
+- **Mobile-First**: Optimized for all device sizes
+- **Accessibility**: WCAG compliant design patterns
+
+### 📧 **Communication**
+
+- **Email Notifications**: Automated credential delivery via email
+- **SMTP Integration**: Professional email delivery system
+- **User Onboarding**: Automated account creation and credential distribution
 
 ## 📋 Prerequisites
 
@@ -55,7 +86,7 @@ Before running this application, make sure you have the following installed:
    REACT_APP_API_URL=http://localhost:5000/api
    ```
 
-4. **Start MongoDB**
+3. **Start MongoDB**
 
    ```bash
    # If using local MongoDB
@@ -249,6 +280,18 @@ PRMS/
 - `PUT /:id` - Update prescription
 - `DELETE /:id` - Soft delete prescription
 
+#### Admin Routes (`/api/admin`)
+
+- `GET /stats` - Get comprehensive system statistics and analytics (Admin only)
+
+#### Appointment Routes (`/api/appointment`)
+
+- `POST /` - Create new appointment
+- `GET /` - Get appointments (with pagination)
+- `GET /:id` - Get appointment by ID
+- `PUT /:id` - Update appointment
+- `DELETE /:id` - Cancel appointment
+
 #### General Routes
 
 - `GET /` - Server status and welcome message
@@ -359,21 +402,61 @@ PRMS/
 
 ## 🧪 Testing the Setup
 
-1. **Start the application:**
+### **Quick Start with Sample Data**
+
+1. **Seed the database with sample data:**
 
    ```bash
-   npm run dev
+   cd server
+   npm run seed
    ```
 
-2. **Open your browser** to http://localhost:5173
+2. **Start the application:**
 
-3. **Test the features:**
-   - Login with admin credentials (use seeder to create admin user)
-   - Test patient registration
-   - Test doctor registration
-   - Create medical records with SOAP notes
-   - Generate prescriptions
-   - Verify MongoDB connection in server logs
+   ```bash
+   # Terminal 1 - Backend
+   cd server && npm run dev
+
+   # Terminal 2 - Frontend
+   cd client && npm run dev
+   ```
+
+3. **Open your browser** to `http://localhost:5173` (or the port shown in terminal)
+
+4. **Login with sample credentials:**
+
+   **Admin Access:**
+
+   - Email: `selvakumarthushanthan5@gmail.com`
+   - Password: `admin@123$`
+
+   **Sample Patient Access (password: `password123`):**
+
+   - `john.smith@email.com` (Student)
+   - `sarah.johnson@email.com` (Public)
+   - `michael.brown@email.com` (Staff)
+
+   **Sample Doctor Access (password: `password123`):**
+
+   - `amanda.roberts@hospital.com` (General Medicine)
+   - `james.thompson@hospital.com` (Cardiology)
+   - `maria.garcia@hospital.com` (Pediatrics)
+
+### **Sample Data Includes:**
+
+- **8 Patients** with different types (Student, Public, Staff)
+- **5 Doctors** with various specializations
+- **5 Medical Records** with complete SOAP notes
+- **Prescriptions** linked to medical records
+- **Realistic healthcare scenarios** for testing
+
+### **Test the Features:**
+
+- **Admin Dashboard**: View comprehensive statistics and pie charts
+- **Patient Management**: Browse and manage patient profiles
+- **Doctor Management**: View doctor specializations and experience
+- **Medical Records**: Review SOAP notes and prescriptions
+- **Analytics**: Explore patient type distributions and trends
 
 ## 🏥 Healthcare System Features
 
