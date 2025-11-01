@@ -11,6 +11,7 @@ import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
 import Dashboard from "./pages/Dashboard";
 import DoctorForm from "./components/forms/DoctorForm";
+import MedicalRecordForm from "./components/medical/MedicalRecordForm";
 
 const App = () => {
   const { user } = useAppContext();
@@ -41,7 +42,14 @@ const App = () => {
             <Route path="/dashboard/:role" element={<Dashboard />}>
               <Route path="/dashboard/:role/:section" element={<Dashboard />} />
             </Route>
-            <Route path="/dashboard/:role/add-doctor" element={<DoctorForm />} />
+            <Route
+              path="/dashboard/:role/add-doctor"
+              element={<DoctorForm />}
+            />
+            <Route
+              path="/appointment/:patientId"
+              element={<MedicalRecordForm />}
+            />
           </Route>
 
           {/* ERROR PAGE */}
