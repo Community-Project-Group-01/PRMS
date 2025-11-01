@@ -21,6 +21,7 @@ import {
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
+import { useNavigate } from "react-router-dom";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -31,6 +32,7 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const navigate = useNavigate();
 
   // Calculate age from date of birth
   const calculateAge = (dob) => {
@@ -313,8 +315,7 @@ const Patients = () => {
                   filteredPatients.map((patient) => (
                     <tr
                       key={patient._id}
-                      className="hover:bg-primary/5 transition-colors cursor-pointer group"
-                      onClick={() => handleViewDetails(patient)}>
+                      className="hover:bg-primary/5 transition-colors cursor-pointer group">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-sm group-hover:shadow-md transition-shadow">
@@ -333,11 +334,13 @@ const Patients = () => {
                           </div>
                         </div>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/10 text-primary-dark">
                           {calculateAge(patient.dob)}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
@@ -350,16 +353,30 @@ const Patients = () => {
                           {patient.gender || "N/A"}
                         </span>
                       </td>
+
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm text-gray-700">
                           <FiPhone className="w-4 h-4 text-primary" />
                           {patient.contact || "N/A"}
                         </div>
                       </td>
+
                       <td className="px-6 py-4">
                         <span className="text-sm font-mono font-medium text-gray-700 bg-gray-100 px-3 py-1 rounded-lg">
                           {patient.nic || "N/A"}
                         </span>
+                      </td>
+
+                      {/* ✅ Action button cell */}
+                      <td className="px-6 py-4 text-right">
+                        <Button
+                          variant="primary"
+                          size="small"
+                          onClick={() =>
+                            navigate(`/appointment/${patient._id}`)
+                          }>
+                          Consult
+                        </Button>
                       </td>
                     </tr>
                   ))
@@ -571,4 +588,3 @@ const Patients = () => {
 };
 
 export default Patients;
-
