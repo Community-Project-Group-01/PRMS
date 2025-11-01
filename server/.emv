@@ -1,0 +1,11 @@
+NODE_ENV="development"
+CORS_ORIGIN = "http://localhost:5173"
+PORT=5000
+MONGODB_URI="mongodb+srv://prms:prms1234@cluster0.8kuookx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/prms"
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production_12345
+MAIL_USER="982072002@smtp-brevo.com"
+MAIL_PASS="x6GQOqwdmjycsgv4"
+SENDER_EMAIL="selvakumarthushanthan5@gmail.com"
+SUPER_ADMIN_EMAIL="selvakumarthushanthan5@gmail.com"
+SUPER_ADMIN_PASSWORD ="admin@123$"
+dr_password='dr.45ras#97'
