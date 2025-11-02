@@ -4,8 +4,6 @@ import Footer from "./components/common/Footer";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
-import DoctorDashboard from "./pages/doctor/DoctorDashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
@@ -43,7 +41,11 @@ const App = () => {
               <Route path="/dashboard/:role/:section" element={<Dashboard />} />
             </Route>
             <Route
-              path="/dashboard/:role/add-doctor"
+              path="/dashboard/admin/add-doctor"
+              element={<DoctorForm />}
+            />
+            <Route
+              path="/dashboard/admin/add-patient"
               element={<DoctorForm />}
             />
             <Route
