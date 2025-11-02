@@ -12,6 +12,7 @@ import {
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
+import { useNavigate } from "react-router-dom";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -22,6 +23,7 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const navigate = useNavigate();
 
   // Calculate age from date of birth
   const calculateAge = (dob) => {
@@ -137,7 +139,7 @@ const Patients = () => {
   };
 
   const handleAddPatient = () => {
-    console.log("Add patient clicked");
+    navigate("/dashboard/admin/add-patient");
   };
 
   if (loading) {
