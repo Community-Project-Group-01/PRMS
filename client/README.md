@@ -72,13 +72,13 @@ client/
 │   └── index.html              # Main HTML template
 ├── src/
 │   ├── api/
-│   │   └── client.js           # Axios configuration
+│   │   └── client.js           # Axios configuration with credentials
 │   ├── components/
 │   │   ├── admin/              # Admin-specific components
 │   │   │   ├── Overview.jsx    # Analytics dashboard with pie charts
 │   │   │   ├── Patients.jsx    # Patient management
 │   │   │   ├── Doctors.jsx     # Doctor management
-│   │   │   └── Inventory.jsx   # Inventory management
+│   │   │   └── Inventory.jsx   # Inventory management (placeholder)
 │   │   ├── doctor/             # Doctor-specific components
 │   │   │   ├── Overview.jsx    # Doctor dashboard
 │   │   │   ├── Patients.jsx    # Patient list for doctors
@@ -89,10 +89,18 @@ client/
 │   │   │   ├── Footer.jsx      # Footer component
 │   │   │   ├── Button.jsx      # Reusable button
 │   │   │   └── Spinner.jsx     # Loading spinner
-│   │   │   └── forms/          # Form components
-│   │   │       ├── AdminForm.jsx
-│   │   │       ├── DoctorForm.jsx
-│   │   │       └── PatientForm.jsx
+│   │   ├── forms/              # Form components
+│   │   │   ├── AdminForm.jsx
+│   │   │   ├── DoctorForm.jsx
+│   │   │   └── PatientForm.jsx
+│   │   └── medical/            # Medical components
+│   │       ├── MedicalRecordForm.jsx
+│   │       ├── prescription/
+│   │       │   └── PrescriptionForm.jsx
+│   │       ├── soap/
+│   │       │   └── SoapForm.jsx
+│   │       └── vitals/
+│   │           └── VitalsForm.jsx
 │   ├── pages/                  # Page components
 │   │   ├── Login.jsx           # Authentication page
 │   │   ├── Dashboard.jsx       # Main dashboard router
@@ -137,6 +145,8 @@ client/
    VITE_API_URL=http://localhost:5000/api
    ```
 
+   **Note**: The API base URL should include `/api` at the end. The Axios client will use this URL to make requests to the backend.
+
 3. **Start development server:**
 
    ```bash
@@ -148,10 +158,10 @@ client/
 
 ### **Available Scripts**
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+- `npm run dev` - Start development server with hot reload (Vite HMR)
+- `npm run build` - Build for production (outputs to `dist` folder)
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint for code quality checks
 
 ## 🎨 UI Components
 
@@ -232,6 +242,8 @@ npm run build
 VITE_API_URL=https://your-api-domain.com/api
 ```
 
+**Important**: Make sure the production API URL includes `/api` at the end, and that CORS is properly configured on the backend to allow requests from your frontend domain.
+
 ## 🐛 Troubleshooting
 
 ### **Common Issues**
@@ -258,13 +270,40 @@ VITE_API_URL=https://your-api-domain.com/api
 
 ## 📝 Development Notes
 
-- **React 19**: Uses latest React features and hooks
-- **Vite**: Fast development with HMR (Hot Module Replacement)
-- **Tailwind CSS**: Utility-first CSS framework
-- **Component Architecture**: Modular, reusable components
-- **State Management**: React Context API for global state
-- **Routing**: React Router for client-side navigation
-- **API Integration**: Axios for HTTP requests with credentials
+### **Technology Stack**
+
+**Core Technologies:**
+- **React 19.1.1**: Latest React with modern hooks and context API
+- **React DOM 19.1.1**: React rendering library
+- **Vite 7.1.7**: Fast build tool and development server with HMR
+- **Tailwind CSS 4.1.14**: Utility-first CSS framework
+- **React Router DOM 7.9.3**: Client-side routing and navigation
+
+**UI Libraries:**
+- **React Icons 5.5.0**: Comprehensive icon library
+- **React Hot Toast 2.6.0**: Toast notification system
+
+**Development Tools:**
+- **Axios 1.12.2**: HTTP client for API requests with credentials support
+- **ESLint 9.36.0**: Code linting and quality checks
+- **Vite Plugin React 5.0.3**: React support for Vite
+
+### **Architecture**
+
+- **Component-Based**: Modular, reusable React components
+- **State Management**: React Context API (`AppContext`) for global state
+- **Routing**: React Router with protected routes middleware
+- **API Integration**: Centralized Axios client with credentials for authentication
+- **Form Handling**: Custom form components for admin, doctor, and patient registration
+- **Medical Components**: Specialized components for SOAP notes, prescriptions, and vitals
+
+### **Key Features**
+
+- **Role-Based Dashboards**: Separate dashboards for admin, doctor, and patient roles
+- **Protected Routes**: Middleware for route protection based on authentication
+- **Real-Time Updates**: Context API for reactive state updates
+- **Responsive Design**: Mobile-first approach with Tailwind CSS
+- **Error Handling**: Error page component for 404 and other errors
 
 ## 🤝 Contributing
 

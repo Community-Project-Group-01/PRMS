@@ -83,10 +83,22 @@ Before running this application, make sure you have the following installed:
    **Client Environment** (`client/.env`):
 
    ```env
-   VITE_API_URL="http://localhost:5000"
+   VITE_API_URL="http://localhost:5000/api"
    ```
 
-3. **Start MongoDB**
+3. **Install dependencies:**
+
+   ```bash
+   # Install server dependencies
+   cd server
+   npm install
+
+   # Install client dependencies
+   cd ../client
+   npm install
+   ```
+
+4. **Start MongoDB**
 
    ```bash
    # If using local MongoDB
@@ -134,6 +146,7 @@ PRMS/
 │   │   ├── Doctor.js            # Doctor-specific details
 │   │   ├── MedicalRecord.js     # SOAP notes and medical records
 │   │   ├── Prescription.js      # Prescription management
+│   │   ├── Appoinment.js        # Appointment management (Note: file name is Appoinment.js)
 │   │   └── AuditLog.js          # System audit logs
 │   │
 │   ├── routes/              # API endpoints
@@ -141,24 +154,29 @@ PRMS/
 │   │   ├── patientRoutes.js     # Patient management
 │   │   ├── doctorRoutes.js      # Doctor management
 │   │   ├── medicalRecordRoutes.js # Medical records
-│   │   └── prescriptionRoutes.js # Prescription management
+│   │   ├── prescriptionRoutes.js # Prescription management
+│   │   ├── appointmentRoutes.js # Appointment routes
+│   │   └── adminRoutes.js       # Admin routes
 │   │
 │   ├── controllers/         # Business logic
 │   │   ├── authController.js    # Login, logout, authentication
 │   │   ├── patientController.js # Patient CRUD operations
 │   │   ├── doctorController.js  # Doctor CRUD operations
 │   │   ├── medicalRecordController.js # Medical record management
-│   │   └── prescriptionController.js # Prescription management
+│   │   ├── prescriptionController.js # Prescription management
+│   │   ├── appointmentController.js # Appointment management
+│   │   └── adminController.js   # Admin statistics and analytics
 │   │
 │   ├── utils/               # Helper functions
 │   │   ├── generateToken.js     # JWT token generation
 │   │   ├── generatePassword.js  # Password generation
 │   │   ├── mailer.js            # Email functionality
-│   │   ├── validator.js         # Input validation
+│   │   ├── validator.js         # Input validation (NIC, email, mobile, password)
 │   │   └── sanitizeLog.js       # Log sanitization
 │   │
 │   ├── seeders/             # Database seeders
-│   │   └── seedAdmin.js         # Admin user seeder
+│   │   ├── seedAdmin.js         # Admin user seeder
+│   │   └── seedSampleData.js    # Sample data seeder
 │   │
 │   ├── index.js             # Server entry point
 │   └── package.json
@@ -184,10 +202,18 @@ PRMS/
 │   │   │   │   ├── Overview.jsx
 │   │   │   │   ├── Patients.jsx
 │   │   │   │   └── Appointments.jsx
-│   │   │   └── forms/           # Form components
-│   │   │       ├── AdminForm.jsx
-│   │   │       ├── DoctorForm.jsx
-│   │   │       └── PatientForm.jsx
+│   │   │   ├── forms/           # Form components
+│   │   │   │   ├── AdminForm.jsx
+│   │   │   │   ├── DoctorForm.jsx
+│   │   │   │   └── PatientForm.jsx
+│   │   │   └── medical/          # Medical components
+│   │   │       ├── MedicalRecordForm.jsx
+│   │   │       ├── prescription/
+│   │   │       │   └── PrescriptionForm.jsx
+│   │   │       ├── soap/
+│   │   │       │   └── SoapForm.jsx
+│   │   │       └── vitals/
+│   │   │           └── VitalsForm.jsx
 │   │   │
 │   │   ├── pages/           # Page components
 │   │   │   ├── Login.jsx         # Authentication page
@@ -306,12 +332,24 @@ PRMS/
 {
   name: String (required, trim),
   email: String (required, unique, lowercase),
-  password: String (required, min: 6 chars, hashed),
+  password: String (required, minlength: 6, hashed with bcrypt),
   role: String (enum: ['admin', 'doctor', 'patient'], required),
   createdAt: Date,
   updatedAt: Date
 }
-````
+```
+
+### Appointment Model
+
+```javascript
+{
+  patient: ObjectId (ref: 'Patient', required),
+  doctor: ObjectId (ref: 'Doctor', required),
+  status: String (enum: ['Queue', 'Consultation', 'Closed'], default: 'Queue'),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
 
 ### Patient Model
 
@@ -523,7 +561,7 @@ Make sure to set these environment variables in your production environment:
 
 **Client Environment:**
 
-- `REACT_APP_API_URL=your_backend_api_url`
+- `VITE_API_URL=your_backend_api_url/api`
 
 ## 🤝 Contributing
 
@@ -535,19 +573,36 @@ Make sure to set these environment variables in your production environment:
 
 ## 📝 Development Notes
 
-- The application uses **React 19** with modern hooks and context API
-- **Vite** for fast development and building
-- **Tailwind CSS** for modern, responsive UI design
-- **Express 5** for the backend API with middleware support
-- **Mongoose 8** for MongoDB object modeling and validation
-- **JWT** for secure authentication with HTTP-only cookies
-- **Nodemailer** for email notifications
-- **bcrypt** for password hashing
-- **Helmet** for security headers
-- **Morgan** for HTTP request logging
-- **Compression** for response compression
-- **CORS** for cross-origin resource sharing
-- **Nodemon** for automatic server restarts during development
+### Technology Stack
+
+**Frontend:**
+- **React 19.1.1** with modern hooks and context API
+- **Vite 7.1.7** for fast development and building
+- **Tailwind CSS 4.1.14** for modern, responsive UI design
+- **React Router DOM 7.9.3** for client-side routing
+- **Axios 1.12.2** for HTTP requests
+- **React Hot Toast 2.6.0** for notifications
+- **React Icons 5.5.0** for iconography
+
+**Backend:**
+- **Express.js 5.1.0** for the backend API with middleware support
+- **Mongoose 8.18.2** for MongoDB object modeling and validation
+- **MongoDB 6.20.0** for database storage
+- **jsonwebtoken 9.0.2** for secure authentication with HTTP-only cookies
+- **bcrypt 6.0.0** for password hashing
+- **Nodemailer 7.0.6** for email notifications
+- **Helmet 8.1.0** for security headers
+- **Morgan 1.10.1** for HTTP request logging
+- **Compression 1.8.1** for response compression
+- **CORS 2.8.5** for cross-origin resource sharing
+- **Nodemon 3.1.10** for automatic server restarts during development
+
+### Validation Rules
+
+- **Password**: Minimum 8 characters, at least 1 letter and 1 number
+- **NIC**: Supports both old format (9 digits + V/X) and new format (12 digits)
+- **Mobile Number**: 10 digits exactly
+- **Email**: RFC-compliant email validation
 
 ## 🐛 Troubleshooting
 
@@ -566,7 +621,7 @@ Make sure to set these environment variables in your production environment:
 
 3. **CORS Issues**
 
-   - Check that the REACT_APP_API_URL matches your backend URL
+   - Check that the VITE_API_URL matches your backend URL
    - Verify CORS is properly configured in server/index.js
    - Ensure credentials are enabled in axios configuration
 
@@ -634,3 +689,4 @@ If you encounter any issues or have questions, please:
 ---
 
 **Happy Healthcare Management! 🏥**
+````
