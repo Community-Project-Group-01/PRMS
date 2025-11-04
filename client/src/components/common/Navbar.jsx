@@ -9,12 +9,14 @@ import {
   FaTimes,
 } from "react-icons/fa";
 import Button from "./Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { userDetails, user, logout } = useAppContext();
+  const location = useLocation();
+  const myPath = location.pathname.split("/")[1];
 
   const navItems = [
     { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
@@ -34,7 +36,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className=" text-primary-dark sticky top-0 z-40 p-3 backdrop-blur-xl">
+    <nav className="bg-white shadow-sm text-primary-dark sticky top-0 z-40 p-3">
       <div className="mx-auto">
         <div className="flex justify-between items-center h-16">
           {/* Brand & Mobile Menu */}
@@ -74,7 +76,10 @@ const Navbar = () => {
                     <Link
                       key={item.href}
                       to={item.href}
-                      className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200">
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-primary-dark hover:text-white transition-colors duration-200 ${
+                        myPath === item.label.toLowerCase() &&
+                        "bg-primary-dark text-white"
+                      }`}>
                       {Icon && <Icon className="w-4 h-4" />}
                       <span>{item.label}</span>
                     </Link>

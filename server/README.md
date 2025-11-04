@@ -78,15 +78,15 @@ server/
 │   ├── auditMiddleware.js       # System activity logging
 │   └── protectedRoutes.js      # JWT authentication middleware
 ├── models/                      # MongoDB data models
-│   ├── Appoinment.js           # Appointment schema
+│   ├── Appoinment.js           # Appointment schema (status: Queue, Consultation, Closed)
 │   ├── AuditLog.js             # Audit logging schema
 │   ├── Doctor.js               # Doctor schema
-│   ├── MedicalRecord.js        # Medical record schema
+│   ├── MedicalRecord.js        # Medical record schema (SOAP format)
 │   ├── Patient.js              # Patient schema
 │   ├── Prescription.js         # Prescription schema
 │   └── User.js                 # Base user schema
 ├── routes/                      # API route definitions
-│   ├── adminRoutes.js          # Admin-specific routes
+│   ├── adminRoutes.js          # Admin-specific routes (stats endpoint)
 │   ├── appointmentRoutes.js     # Appointment routes
 │   ├── doctorRoutes.js          # Doctor routes
 │   ├── medicalRecordRoutes.js   # Medical record routes
@@ -210,8 +210,20 @@ server/
 {
   name: String (required, trim),
   email: String (required, unique, lowercase),
-  password: String (required, min: 6 chars, hashed),
+  password: String (required, minlength: 6, hashed with bcrypt),
   role: String (enum: ['admin', 'doctor', 'patient'], required),
+  createdAt: Date,
+  updatedAt: Date
+}
+```
+
+### **Appointment Model**
+
+```javascript
+{
+  patient: ObjectId (ref: 'Patient', required),
+  doctor: ObjectId (ref: 'Doctor', required),
+  status: String (enum: ['Queue', 'Consultation', 'Closed'], default: 'Queue'),
   createdAt: Date,
   updatedAt: Date
 }
@@ -304,9 +316,10 @@ server/
 
 ### **Input Validation**
 
-- **Sri Lankan NIC**: Comprehensive NIC validation
-- **Mobile Numbers**: Sri Lankan mobile number validation
+- **Sri Lankan NIC**: Supports old format (9 digits + V/X) and new format (12 digits)
+- **Mobile Numbers**: 10 digits exactly
 - **Email Validation**: RFC-compliant email validation
+- **Password Validation**: Minimum 8 characters, at least 1 letter and 1 number
 - **Data Sanitization**: Input sanitization for security
 
 ### **Security Headers**
@@ -439,16 +452,34 @@ DEBUG=* npm run dev
 
 ## 📝 Development Notes
 
-- **Express 5**: Latest Express.js with modern features
-- **Mongoose 8**: Latest Mongoose with improved performance
-- **JWT Authentication**: Secure token-based authentication
-- **MongoDB Atlas**: Cloud database for production
-- **Nodemailer**: Professional email delivery
-- **bcrypt**: Secure password hashing
-- **Helmet**: Security headers
-- **CORS**: Cross-origin resource sharing
-- **Morgan**: HTTP request logging
-- **Compression**: Response compression
+### **Technology Stack**
+
+- **Express.js 5.1.0**: Latest Express.js with modern features
+- **Mongoose 8.18.2**: Latest Mongoose with improved performance
+- **MongoDB 6.20.0**: NoSQL database for flexible data storage
+- **jsonwebtoken 9.0.2**: Secure token-based authentication
+- **bcrypt 6.0.0**: Secure password hashing
+- **Nodemailer 7.0.6**: Professional email delivery via SMTP
+- **Helmet 8.1.0**: HTTP security headers
+- **CORS 2.8.5**: Cross-origin resource sharing
+- **Morgan 1.10.1**: HTTP request logging
+- **Compression 1.8.1**: Response compression
+- **Cookie-parser 1.4.7**: Cookie parsing middleware
+- **Nodemon 3.1.10**: Automatic server restarts during development
+
+### **Validation Rules**
+
+- **Password**: Minimum 8 characters, at least 1 letter and 1 number
+- **NIC**: Supports both old format (9 digits + V/X) and new format (12 digits)
+- **Mobile Number**: 10 digits exactly
+- **Email**: RFC-compliant email validation
+
+### **Database Features**
+
+- **Soft Delete**: Medical records and prescriptions use `isDeleted` flag for data retention
+- **Indexing**: Compound indexes on medical records for faster queries
+- **Virtual Fields**: Medical records include summary virtual for listing views
+- **Transactions**: Medical record creation uses MongoDB transactions for data consistency
 
 ## 🤝 Contributing
 
