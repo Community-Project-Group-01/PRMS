@@ -135,7 +135,7 @@ const MedicalRecordForm = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+    <div className="bg-white rounded-lg shadow-lg p-6 max-w-4xl mx-auto my-5 border-1 border-primary-dark/30">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-3">

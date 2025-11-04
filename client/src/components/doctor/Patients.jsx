@@ -6,7 +6,6 @@ const Patients = () => {
 
 export default Patients;*/
 
-
 import React, { useState, useEffect } from "react";
 import {
   FiSearch,
@@ -147,10 +146,6 @@ const Patients = () => {
     fetchPatients();
   };
 
-  const handleAddPatient = () => {
-    console.log("Add patient clicked");
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -194,14 +189,6 @@ const Patients = () => {
                 className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white">
                 {!refreshing && <FiRefreshCw className="w-4 h-4 mr-2" />}
                 Refresh
-              </Button>
-              <Button
-                variant="primary"
-                size="medium"
-                onClick={handleAddPatient}
-                className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark">
-                <FiUserPlus className="w-4 h-4 mr-2" />
-                Add Patient
               </Button>
             </div>
           </div>
