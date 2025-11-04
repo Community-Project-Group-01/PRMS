@@ -24,9 +24,17 @@ export const AppContextProvider = ({ children }) => {
         setUserDetails(data.data);
       } else {
         setUserDetails(null);
+        setUser(null);
+        localStorage.removeItem("user");
       }
     } catch (error) {
       console.error("Error fetching user:", error.message);
+      // Clear user state on 401 errors (token expired/invalid)
+      if (error.response?.status === 401) {
+        setUser(null);
+        setUserDetails(null);
+        localStorage.removeItem("user");
+      }
     } finally {
       setLoading(false);
     }
