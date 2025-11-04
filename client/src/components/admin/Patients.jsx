@@ -158,16 +158,6 @@ const Patients = () => {
   return (
     <div className={"min-h-screen bg-white p-6"}>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">
-            Patient Management
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Manage and view all patient records in one place
-          </p>
-        </div>
-
         {/* Action Bar */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -573,4 +563,4 @@ const Patients = () => {
   );
 };
 
-export default Patients;
+export default Patients;

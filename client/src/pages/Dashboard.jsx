@@ -31,9 +31,14 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="flex gap-6 my-6 mx-auto">
-      <Sidebar role={role} />
-      <main className="flex-1 min-w-0">{renderDashboard()}</main>
+    <div className="flex h-screen overflow-hidden bg-gray-100">
+      {/* Sidebar */}
+      <div className="w-20 lg:w-64 flex-shrink-0">
+        <Sidebar role={role} />
+      </div>
+
+      {/*dashboard content */}
+      <main className="flex-1 overflow-y-auto p-6">{renderDashboard()}</main>
     </div>
   );
 };
