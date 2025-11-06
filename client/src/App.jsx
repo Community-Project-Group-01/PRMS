@@ -9,6 +9,7 @@ import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
 import Dashboard from "./pages/Dashboard";
 import DoctorForm from "./components/forms/DoctorForm";
+import PatientForm from "./components/forms/PatientForm";
 import MedicalRecordForm from "./components/medical/MedicalRecordForm";
 
 const App = () => {
@@ -46,7 +47,7 @@ const App = () => {
             />
             <Route
               path="/dashboard/admin/add-patient"
-              element={<DoctorForm />}
+              element={<PatientForm />}
             />
             <Route
               path="/appointment/:patientId"
