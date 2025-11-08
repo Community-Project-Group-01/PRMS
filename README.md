@@ -83,7 +83,7 @@ Before running this application, make sure you have the following installed:
    **Client Environment** (`client/.env`):
 
    ```env
-   VITE_API_URL="http://localhost:5000/api"
+   VITE_API_URL="http://localhost:5000"
    ```
 
 3. **Install dependencies:**
