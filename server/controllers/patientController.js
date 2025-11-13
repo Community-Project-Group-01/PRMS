@@ -19,10 +19,12 @@ const registerPatient = async (req, res) => {
             contact,
             address,
             dob,
+            age,
+            gender,
         } = req.body;
 
         // Validate required fields
-        if (!name || !email || !role || !nic || !contact || !dob) {
+        if (!name || !email || !role || !nic || !contact || !gender || !age) {
             return res.status(400).json({ success: false, message: "All required fields must be provided" });
         }
 
@@ -47,16 +49,16 @@ const registerPatient = async (req, res) => {
             return res.status(409).json({ success: false, message: "Email or NIC already registered" });
         }
 
-        // Generate and hash password
-        const plainPassword = await generatePassword(name, nic, email);
+        // // Generate and hash password
+        // const plainPassword = await generatePassword(name, nic, email);
 
-        const hashedPassword = await bcrypt.hash(plainPassword, 10);
+        // const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
         // Create user
         const newUser = new User({
             name,
             email,
-            password: hashedPassword,
+            password: "none",
             role,
         });
         await newUser.save();
@@ -73,17 +75,17 @@ const registerPatient = async (req, res) => {
         });
         await newPatient.save();
 
-        // Send email with plain password
-        await sendMail(email, "Your Account Credentials", `
-      Hi ${name},
-      
-      Your patient account has been created successfully.
+        //         // Send email with plain password
+        //         await sendMail(email, "Your Account Credentials", `
+        //       Hi ${name},
 
-    Email: ${email}
-Password: ${plainPassword}
-      
-      Please keep your password safe.
-    `);
+        //       Your patient account has been created successfully.
+
+        //     Email: ${email}
+        // Password: ${plainPassword}
+
+        //       Please keep your password safe.
+        //     `);
 
         // Respond
         return res.status(201).json({
