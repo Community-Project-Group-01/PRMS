@@ -6,6 +6,7 @@ const patientSchema = new mongoose.Schema(
             type: String,
             required: true,
             unique: true,
+            trim: true,
         },
         user: {
             type: mongoose.Schema.Types.ObjectId,
@@ -17,25 +18,37 @@ const patientSchema = new mongoose.Schema(
             enum: ["student", "public", "staff"],
             required: true,
         },
+        gender: {
+            type: String,
+            enum: ["male", "female", "other"],
+            required: true,
+        },
         allergies: {
             type: [String],
             default: [],
         },
         contact: {
             type: String,
-            default: "",
+            required: true,
+            trim: true,
         },
         address: {
             type: String,
-            default: "",
+            required: true,
+            trim: true,
         },
         dob: {
             type: Date,
-            required: true
+            required: true,
+        },
+        age: {
+            type: Number,
+            required: true,
+            min: 0,
         },
     },
     { timestamps: true }
 );
 
 const Patient = mongoose.model("Patient", patientSchema);
-module.exports = { Patient }
+module.exports = { Patient };
