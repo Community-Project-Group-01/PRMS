@@ -138,6 +138,10 @@ const Patients = () => {
     }
   }, [searchTerm, patients]);
 
+  const handleAddPatient = () => {
+    navigate("/dashboard/admin/add-patient");
+  };
+
   const handleViewDetails = (patient) => {
     fetchPatientById(patient._id);
   };
@@ -189,6 +193,14 @@ const Patients = () => {
                 className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white">
                 {!refreshing && <FiRefreshCw className="w-4 h-4 mr-2" />}
                 Refresh
+              </Button>
+              <Button
+                variant="primary"
+                size="medium"
+                onClick={handleAddPatient}
+                className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark">
+                <FiUserPlus className="w-4 h-4 mr-2" />
+                Add Patient
               </Button>
             </div>
           </div>
@@ -301,6 +313,7 @@ const Patients = () => {
                 ) : (
                   filteredPatients.map((patient) => (
                     <tr
+                      onClick={() => handleViewDetails(patient)}
                       key={patient._id}
                       className="hover:bg-primary/5 transition-colors cursor-pointer group">
                       <td className="px-6 py-4">
@@ -550,19 +563,28 @@ const Patients = () => {
                               </span>
                             ))}
                           </div>
+
+                          {/* Action Buttons */}
+                          <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+                            <Button
+                              variant="outline"
+                              size="medium"
+                              className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white"
+                              onClick={() => setSelectedPatient(null)}>
+                              Close
+                            </Button>
+                            <Button
+                              variant="primary"
+                              size="medium"
+                              className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark"
+                              onClick={() =>
+                                navigate(`/appointment/${selectedPatient._id}`)
+                              }>
+                              Consult
+                            </Button>
+                          </div>
                         </div>
                       )}
-
-                    {/* Action Buttons */}
-                    <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-                      <Button
-                        variant="primary"
-                        size="large"
-                        className="bg-primary hover:bg-primary-dark min-w-[120px]"
-                        onClick={() => setSelectedPatient(null)}>
-                        Close
-                      </Button>
-                    </div>
                   </>
                 )}
               </div>
