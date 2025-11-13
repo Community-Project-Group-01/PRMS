@@ -117,7 +117,7 @@ const DoctorForm = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.name && (
               <p className="text-red-500 text-sm">{errors.name}</p>
@@ -132,23 +132,11 @@ const DoctorForm = () => {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email}</p>
             )}
-          </div>
-
-          {/* Role */}
-          <div>
-            <label className="block mb-1 text-primary-dark">Role</label>
-            <input
-              type="text"
-              name="role"
-              value="doctor"
-              readOnly
-              className="w-full border border-primary rounded-lg p-2 bg-gray-100 text-gray-600 cursor-not-allowed"
-            />
           </div>
 
           {/* Specialization */}
@@ -161,7 +149,7 @@ const DoctorForm = () => {
               name="specialization"
               value={formData.specialization}
               onChange={handleChange}
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.specialization && (
               <p className="text-red-500 text-sm">{errors.specialization}</p>
@@ -178,7 +166,7 @@ const DoctorForm = () => {
               name="licenseNumber"
               value={formData.licenseNumber}
               onChange={handleChange}
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.licenseNumber && (
               <p className="text-red-500 text-sm">{errors.licenseNumber}</p>
@@ -196,7 +184,7 @@ const DoctorForm = () => {
               value={formData.yearsOfExperience}
               onChange={handleChange}
               min="0"
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.yearsOfExperience && (
               <p className="text-red-500 text-sm">{errors.yearsOfExperience}</p>
@@ -214,7 +202,7 @@ const DoctorForm = () => {
               value={formData.contact}
               onChange={handleChange}
               placeholder="E.g. 0712345678"
-              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary-light"
+              className="w-full border border-primary rounded-lg p-2 focus:outline-none focus:border-primary-dark focus:ring-1 focus:ring-primary-dark"
             />
             {errors.contact && (
               <p className="text-red-500 text-sm">{errors.contact}</p>
