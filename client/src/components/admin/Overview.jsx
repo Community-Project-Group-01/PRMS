@@ -33,8 +33,17 @@ const Overview = () => {
     fetchStats();
   }, [api]);
 
-  if (loading) {
-    return <Spinner />;
+ if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Spinner
+          size="large"
+          variant="primary"
+          showText
+          text="Loading Overview..."
+        />
+      </div>
+    );
   }
 
   if (!stats) {
@@ -97,7 +106,7 @@ const Overview = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen bg-white p-6">
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard

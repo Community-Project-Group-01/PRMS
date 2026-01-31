@@ -54,13 +54,10 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center bg-whitesmoke py-8 pb-5">
-      <div className="w-full max-w-md px-4">
+    <div className="bg-gray-50 min-h-screen w-full flex items-center justify-center bg-whitesmoke py-8 pb-5">
+      <div className="w-full flex items-center justify-center flex-col px-4">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4 bg-gradient-to-br from-[#52d4cb] to-[#399491] shadow-lg">
-            <FaHeart className="w-10 h-10 text-white" />
-          </div>
           <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
             Medical Record System
           </h1>
@@ -70,7 +67,7 @@ const Login = () => {
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300">
+        <div className="bg-white w-4/12 h-8/12 rounded-2xl shadow-xl p-8 border border-gray-100 hover:shadow-2xl transition-all duration-300">
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-3">
               Welcome Back

@@ -49,15 +49,7 @@ const AdminDashboard = ({ section }) => {
 
   return (
     <div className="h-fit bg-gray-50/30">
-      <div className="bg-white rounded-2xl shadow-sm p-6 mx-2">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 capitalize">
-            {section || "Dashboard"}
-          </h1>
-          <p className="text-gray-600 mt-1">
-            Welcome to your {section} management panel
-          </p>
-        </div>
+      <div className="bg-white rounded-2xl shadow-sm">
         {renderComponent()}
       </div>
     </div>

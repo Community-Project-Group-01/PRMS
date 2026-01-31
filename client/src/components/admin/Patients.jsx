@@ -157,7 +157,7 @@ const Patients = () => {
 
   return (
     <div className={"min-h-screen bg-white p-6"}>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-auto mx-auto">
         {/* Action Bar */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8 border border-gray-100">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

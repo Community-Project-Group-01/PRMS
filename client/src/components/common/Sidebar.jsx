@@ -42,7 +42,7 @@ const Sidebar = ({ role }) => {
   return (
     <aside
       className="p-4 w-20 lg:w-64 bg-primary-dark rounded-2xl shadow-xl 
-                 h-fit sticky top-6 transition-all duration-300 flex flex-col items-center lg:items-start">
+                 h-4/5 sticky top-6 transition-all duration-300 flex flex-col items-center lg:items-start">
       {/* Sidebar Header */}
       <div className="mb-8 hidden lg:block">
         <h2 className="text-white text-xl font-bold capitalize">
