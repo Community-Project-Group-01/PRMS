@@ -564,27 +564,38 @@ const Patients = () => {
                             ))}
                           </div>
 
-                          {/* Action Buttons */}
-                          <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-                            <Button
-                              variant="outline"
-                              size="medium"
-                              className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white"
-                              onClick={() => setSelectedPatient(null)}>
-                              Close
-                            </Button>
-                            <Button
-                              variant="primary"
-                              size="medium"
-                              className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark"
-                              onClick={() =>
-                                navigate(`/appointment/${selectedPatient._id}`)
-                              }>
-                              Consult
-                            </Button>
-                          </div>
                         </div>
                       )}
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+                      <Button
+                        variant="outline"
+                        size="medium"
+                        className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white"
+                        onClick={() => setSelectedPatient(null)}>
+                        Close
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="medium"
+                        className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark"
+                        onClick={() => {
+                          setSelectedPatient(null);
+                          navigate(`/dashboard/doctor/patient/${selectedPatient._id}/records`);
+                        }}>
+                        View More
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="medium"
+                        className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark"
+                        onClick={() =>
+                          navigate(`/appointment/${selectedPatient._id}`)
+                        }>
+                        Consult
+                      </Button>
+                    </div>
                   </>
                 )}
               </div>

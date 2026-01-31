@@ -11,6 +11,7 @@ import Dashboard from "./pages/Dashboard";
 import DoctorForm from "./components/forms/DoctorForm";
 import PatientForm from "./components/forms/PatientForm";
 import MedicalRecordForm from "./components/medical/MedicalRecordForm";
+import PatientMedicalHistory from "./components/doctor/PatientMedicalHistory";
 
 const App = () => {
   const { user } = useAppContext();
@@ -52,6 +53,10 @@ const App = () => {
             <Route
               path="/appointment/:patientId"
               element={<MedicalRecordForm />}
+            />
+            <Route
+              path="/dashboard/doctor/patient/:patientId/records"
+              element={<PatientMedicalHistory />}
             />
           </Route>
 
