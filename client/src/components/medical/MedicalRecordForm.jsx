@@ -192,8 +192,17 @@ const MedicalRecordForm = () => {
     }
   };
 
-  if (loading && !patient) {
-    return <Spinner size="large" text="Loading patient details..." />;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <Spinner
+          size="large"
+          variant="primary"
+          showText
+          text="Loading Consultations..."
+        />
+      </div>
+    );
   }
 
   return (
@@ -301,7 +310,17 @@ const MedicalRecordForm = () => {
                   )}
                 </span>
               </div>
+             
             </div>
+             <Button
+                variant="primary"
+                size="medium"
+                className="w-fit flex items-center justify-center bg-primary hover:bg-primary-dark"
+                onClick={() => {
+                  navigate(`/dashboard/doctor/patient/${patientId}/records`);
+                }}>
+                View More
+              </Button>
           </div>
         </div>
       )}

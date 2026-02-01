@@ -4,6 +4,7 @@ import { useAppContext } from "../context/AppContext";
 import api from "../api/client";
 import toast from "react-hot-toast";
 import Button from "../components/common/Button";
+import {Link} from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -144,11 +145,11 @@ const Login = () => {
                 <span className="text-sm text-gray-600">Remember me</span>
               </label>
 
-              <a
-                href="#"
+              <Link
+                to="/forgot-password"
                 className="text-sm font-medium text-[#399491] hover:text-[#52d4cb] transition-colors duration-200">
                 Forgot password?
-              </a>
+              </Link>
             </div>
 
             {/* Sign In Button */}

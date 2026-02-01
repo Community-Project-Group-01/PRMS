@@ -57,7 +57,8 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  console.error("Error:", err.message);
+  const logger = require("./utils/logger");
+  logger.error("Unhandled error", { error: err.message, stack: err.stack });
   res.status(err.statusCode || 500).json({
     error: err.message || "Internal Server Error",
   });
@@ -69,29 +70,34 @@ const PORT = process.env.PORT || 5000;
 (async () => {
   try {
     await connectDB();
-    const server = app.listen(PORT, () =>
-      console.log(
+      const logger = require("./utils/logger");
+      const server = app.listen(PORT, () =>
+      logger.info(
         `Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
       )
     );
 
     // Graceful shutdown
     process.on("SIGTERM", () => {
-      console.log("SIGTERM received, shutting down gracefully...");
-      server.close(() => console.log("Process terminated"));
+      const logger = require("./utils/logger");
+      logger.info("SIGTERM received, shutting down gracefully...");
+      server.close(() => logger.info("Process terminated"));
     });
 
     process.on("unhandledRejection", (err) => {
-      console.error("UNHANDLED REJECTION", err);
+      const logger = require("./utils/logger");
+      logger.error("UNHANDLED REJECTION", { error: err.message, stack: err.stack });
       server.close(() => process.exit(1));
     });
 
     process.on("uncaughtException", (err) => {
-      console.error("UNCAUGHT EXCEPTION", err);
+      const logger = require("./utils/logger");
+      logger.error("UNCAUGHT EXCEPTION", { error: err.message, stack: err.stack });
       process.exit(1);
     });
   } catch (err) {
-    console.error("Failed to connect DB", err);
+    const logger = require("./utils/logger");
+    logger.error("Failed to connect DB", { error: err.message, stack: err.stack });
     process.exit(1);
   }
 })();

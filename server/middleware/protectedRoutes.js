@@ -20,7 +20,8 @@ const protectedRoutes = async (req, res, next) => {
     req.user = user;
     next();
   } catch (error) {
-    console.error(`Error in protectedRoutes: ${error.message}`);
+    const logger = require("../utils/logger");
+    logger.error("Error in protectedRoutes", { error: error.message, stack: error.stack });
 
     if (error.name === "TokenExpiredError") {
       return res.status(401).json({

@@ -1,4 +1,6 @@
 const { Prescription } = require("../models/Prescription");
+const { Doctor } = require("../models/Doctor");
+const logger = require("../utils/logger");
 
 const getPrescriptionsByPatient = async (req, res) => {
   try {
@@ -21,7 +23,7 @@ const getPrescriptionsByPatient = async (req, res) => {
       data: prescriptions,
     });
   } catch (error) {
-    console.error("Get Prescription Error:", error.message);
+    logger.error("Get Prescription Error", { error: error.message, stack: error.stack });
     return res
       .status(500)
       .json({ message: "Server error fetching prescriptions." });
@@ -43,7 +45,7 @@ const getPrescriptionById = async (req, res) => {
       data: prescription,
     });
   } catch (error) {
-    console.error("Get Prescription by Id Error:", error.message);
+    logger.error("Get Prescription by Id Error", { error: error.message, stack: error.stack });
     return res
       .status(500)
       .json({ message: "Server error fetching prescriptions." });
@@ -67,7 +69,7 @@ const deletePrescription = async (req, res) => {
       message: "Prescription deleted successfully (soft delete).",
     });
   } catch (error) {
-    console.error("Delete Prescription Error:", error.message);
+    logger.error("Delete Prescription Error", { error: error.message, stack: error.stack });
     return res
       .status(500)
       .json({ message: "Server error deleting prescription." });
@@ -97,7 +99,7 @@ const getPrescriptionsByDoctor = async (req, res) => {
 
     return res.status(200).json({ success: true, data: myPrescriptions });
   } catch (error) {
-    console.error("getPrescriptionsByDoctor Error:", error.message);
+    logger.error("getPrescriptionsByDoctor Error", { error: error.message, stack: error.stack });
     return res
       .status(500)
       .json({ message: "Server error getPrescriptionsByDoctor." });

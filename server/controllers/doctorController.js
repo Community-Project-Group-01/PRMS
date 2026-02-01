@@ -2,7 +2,8 @@ const bcrypt = require("bcrypt");
 const { emailValidator, mobileNumberValidator } = require("../utils/validator");
 const { User } = require("../models/User");
 const { generatePassword } = require("../utils/generatePassword");
-const { sendMail } = require("../utils/mailer");
+const { sendCredentialsEmail } = require("../utils/emailService");
+const logger = require("../utils/logger");
 const mongoose = require("mongoose");
 const { Doctor } = require("../models/Doctor");
 
@@ -66,17 +67,9 @@ const registerDoctor = async (req, res) => {
         });
         await newDoctor.save();
 
-        // Send email with plain password
-        await sendMail(email, "Your Account Credentials", `
-      Hi ${name},
-      
-      Your Doctor account has been created successfully.
-
-    Email: ${email}
-Password: ${plainPassword}
-      
-      Please keep your password safe.
-    `);
+        // Send email with plain password using SendGrid
+        await sendCredentialsEmail(email, name, email, plainPassword, "doctor");
+        logger.info("Doctor registered and credentials email sent", { doctorId: newDoctor._id, email });
 
         // Respond
         return res.status(201).json({
@@ -93,7 +86,7 @@ Password: ${plainPassword}
             },
         });
     } catch (error) {
-        console.error("Error in registerDoctor:", error.message);
+        logger.error("Error in registerDoctor", { error: error.message, stack: error.stack });
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
@@ -102,7 +95,6 @@ Password: ${plainPassword}
 const updateDoctor = async (req, res) => {
     try {
         const doctorId = req.user._id.toString();
-        console.log(doctorId);
 
         const {
             name,
@@ -116,7 +108,6 @@ const updateDoctor = async (req, res) => {
 
         // Check if doctor exists
         const doctor = await Doctor.findOne({ user: doctorId }).populate("user");
-        console.log("sr", doctor);
 
         if (!doctor) {
             return res.status(404).json({ success: false, message: "Doctor not found" });
@@ -187,7 +178,7 @@ const updateDoctor = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Error in updateDoctor:", error.message);
+        logger.error("Error in updateDoctor", { error: error.message, stack: error.stack });
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
@@ -208,7 +199,7 @@ const getAllDoctors = async (req, res) => {
             data: doctors
         });
     } catch (error) {
-        console.error("Error in getAllDoctors:", error.message);
+        logger.error("Error in getAllDoctors", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error"
@@ -239,7 +230,7 @@ const getDoctorById = async (req, res) => {
             data: doctor
         });
     } catch (error) {
-        console.error("Error in getDoctorById:", error.message);
+        logger.error("Error in getDoctorById", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error"

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState, createContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import api from "../api/client"; // axios instance with credentials enabled
 import toast from "react-hot-toast";
 
@@ -13,6 +13,20 @@ export const AppContextProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
   const [loading, setLoading] = useState(true);
+
+
+  const location = useLocation();
+
+  const publicRoutes = [
+    "/login",
+    "/forgot-password",
+    "/reset-password",
+  ];
+
+  const isPublicRoute = publicRoutes.some(path =>
+    location.pathname.startsWith(path)
+  );
+    
 
   // Fetch user info if cookie exists
   const fetchUser = async () => {
@@ -41,8 +55,13 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+  if (isPublicRoute) {
+    setLoading(false);
+    return;
+  }
+
+  fetchUser();
+}, [location.pathname]);
 
   // Logout
   const logout = async () => {

@@ -5,9 +5,11 @@ const connectDB = async () => {
         await mongoose.connect(
             process.env.MONGODB_URI || "mongodb://localhost:27017/prms"
         );
-        console.log("Connected to MongoDB");
+        const logger = require("../utils/logger");
+        logger.info("Connected to MongoDB");
     } catch (error) {
-        console.error("MongoDB connection error:", error);
+        const logger = require("../utils/logger");
+        logger.error("MongoDB connection error", { error: error.message, stack: error.stack });
         process.exit(1);
     }
 };

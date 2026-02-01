@@ -12,7 +12,8 @@ const generateToken = (userId, res) => {
             maxAge: 15 * 24 * 60 * 60 * 1000,
         });
     } catch (error) {
-        console.error(`Error in generateToken: ${error.message}`);
+        const logger = require("./logger");
+        logger.error("Error in generateToken", { error: error.message, stack: error.stack });
     }
 }
 

@@ -4,6 +4,8 @@ import Footer from "./components/common/Footer";
 import { Route, Routes, Navigate } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import ProtectedRoutes from "./middleware/ProtectedRoutes";
 import ErrorPage from "./pages/ErrorPage";
 import { useAppContext } from "./context/AppContext";
@@ -36,6 +38,8 @@ const App = () => {
 
           {/*  redirect to /login */}
           <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* PROTECTED ROUTES */}
           <Route element={<ProtectedRoutes />}>

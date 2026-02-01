@@ -119,7 +119,8 @@ const getAdminStats = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching admin stats:", error);
+    const logger = require("../utils/logger");
+    logger.error("Error fetching admin stats", { error: error.message, stack: error.stack });
     res.status(500).json({
       success: false,
       message: "Internal server error",

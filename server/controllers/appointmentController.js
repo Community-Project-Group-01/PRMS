@@ -1,6 +1,7 @@
 const Appointment = require("../models/Appoinment")
 const { Doctor } = require("../models/Doctor")
 const { Patient } = require("../models/Patient")
+const logger = require("../utils/logger")
 
 // create Appointment
 const createAppoinment = async (req, res) => {
@@ -21,7 +22,7 @@ const createAppoinment = async (req, res) => {
         return res.status(200).json({ success: true, message: "Appoinment Success", data: newAppointment })
     }
     catch (error) {
-        console.error("Error in Create Appointment:", error.message);
+        logger.error("Error in Create Appointment", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error"
@@ -63,7 +64,7 @@ const getAppointmentsOfDoctor = async (req, res) => {
             data: myAppointments,
         });
     } catch (error) {
-        console.error("Error fetching doctor appointments:", error);
+        logger.error("Error fetching doctor appointments", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -97,7 +98,7 @@ const updateAppointment = async (req, res) => {
             data: appointment,
         });
     } catch (error) {
-        console.error("Error updating appointment:", error);
+        logger.error("Error updating appointment", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error",
@@ -133,7 +134,7 @@ const getAppointmentById = async (req, res) => {
             data: appointment,
         });
     } catch (error) {
-        console.error("Error fetching appointment by ID:", error);
+        logger.error("Error fetching appointment by ID", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error",

@@ -4,7 +4,8 @@ const { User } = require("../models/User");
 const { Patient } = require("../models/Patient");
 const { generatePassword } = require("../utils/generatePassword");
 const { generateToken } = require("../utils/generateToken");
-const { sendMail } = require("../utils/mailer");
+const { sendCredentialsEmail } = require("../utils/emailService");
+const logger = require("../utils/logger");
 const mongoose = require("mongoose");
 
 const registerPatient = async (req, res) => {
@@ -101,7 +102,7 @@ const registerPatient = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Error in registerPatient:", error);
+        logger.error("Error in registerPatient", { error: error.message, stack: error.stack });
         return res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
@@ -180,7 +181,7 @@ const updatePatient = async (req, res) => {
             }
         });
     } catch (error) {
-        console.error("Error in updatePatient:", error.message);
+        logger.error("Error in updatePatient", { error: error.message, stack: error.stack });
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
@@ -200,7 +201,7 @@ const getAllPatients = async (req, res) => {
             data: patients
         });
     } catch (error) {
-        console.error("Error in getAllPatients:", error.message);
+        logger.error("Error in getAllPatients", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error"
@@ -231,7 +232,7 @@ const getPatientById = async (req, res) => {
             data: patient
         });
     } catch (error) {
-        console.error("Error in getPatientById:", error.message);
+        logger.error("Error in getPatientById", { error: error.message, stack: error.stack });
         return res.status(500).json({
             success: false,
             message: "Internal server error"

@@ -4,6 +4,7 @@ const { MedicalRecord } = require("../models/MedicalRecord");
 const { Prescription } = require("../models/Prescription");
 const { Doctor } = require("../models/Doctor");
 const { Patient } = require("../models/Patient");
+const logger = require("../utils/logger");
 
 /**
  * Create a medical record with  prescriptions
@@ -116,7 +117,7 @@ const createMedicalRecord = async (req, res, next) => {
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
-    console.error("Create Prescription Error:", error.message);
+    logger.error("Create Prescription Error", { error: error.message, stack: error.stack });
     return res
       .status(500)
       .json({ message: "Server error creating prescription." });
@@ -147,7 +148,7 @@ const getRecordsByDoctor = async (req, res) => {
     }
     return res.status(200).json({ success: true, data: doctorRecord });
   } catch (error) {
-    console.error("Error from get records by doctor:", error.message);
+    logger.error("Error from get records by doctor", { error: error.message, stack: error.stack });
     return res.status(500).json({ message: "Server error with records." });
   }
 };
@@ -193,7 +194,7 @@ const getRecordsByPatient = async (req, res) => {
       data: records,
     });
   } catch (err) {
-    console.error("Error fetching records for patient: " + err.message);
+    logger.error("Error fetching records for patient", { error: err.message, stack: err.stack });
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -217,7 +218,7 @@ const getRecordById = async (req, res) => {
         .json({ success: false, message: "Medical record not found" });
     return res.json({ success: true, data: record });
   } catch (err) {
-    console.error("Error fetching medical record: " + err.message);
+    logger.error("Error fetching medical record", { error: err.message, stack: err.stack });
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -257,7 +258,7 @@ const updateRecord = async (req, res) => {
       data: record,
     });
   } catch (err) {
-    console.error("Error updating medical record: " + err.message);
+    logger.error("Error updating medical record", { error: err.message, stack: err.stack });
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });
@@ -281,7 +282,7 @@ const softDeleteRecord = async (req, res) => {
 
     return res.json({ success: true, message: "Medical record soft-deleted" });
   } catch (err) {
-    console.error("Error deleting medical record: " + err.message);
+    logger.error("Error deleting medical record", { error: err.message, stack: err.stack });
     return res
       .status(500)
       .json({ success: false, message: "Internal server error" });

@@ -9,6 +9,8 @@ import {
   FiHeart,
   FiThermometer,
   FiDroplet,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
 import { FaPills } from "react-icons/fa";
 import Button from "../common/Button";
@@ -24,6 +26,12 @@ const PatientMedicalHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("records"); // 'records' or 'prescriptions'
+  
+  // Pagination states
+  const [recordsPage, setRecordsPage] = useState(1);
+  const [prescriptionsPage, setPrescriptionsPage] = useState(1);
+  const [recordsMeta, setRecordsMeta] = useState({ page: 1, limit: 10, total: 0, pages: 0 });
+  const [prescriptionsMeta, setPrescriptionsMeta] = useState({ page: 1, limit: 10, total: 0, pages: 0 });
 
   // Format date
   const formatDate = (dateString) => {
@@ -51,16 +59,20 @@ const PatientMedicalHistory = () => {
     }
   };
 
-  // Fetch medical records
-  const fetchMedicalRecords = async () => {
+  // Fetch medical records with pagination
+  const fetchMedicalRecords = async (page = 1) => {
     try {
       const response = await api.get(`/api/med/patient/${patientId}`, {
+        params: { page, limit: 10 },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       const data = response.data;
       setMedicalRecords(data.data || []);
+      if (data.meta) {
+        setRecordsMeta(data.meta);
+      }
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
@@ -71,16 +83,18 @@ const PatientMedicalHistory = () => {
     }
   };
 
-  // Fetch prescriptions
-  const fetchPrescriptions = async () => {
+  // Fetch prescriptions with pagination
+  const fetchPrescriptions = async (page = 1) => {
     try {
       const response = await api.get(`/api/prescription/patient/${patientId}`, {
+        params: { page, limit: 10 },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       const data = response.data;
       setPrescriptions(data.data || []);
+      // Note: Prescription API might not return pagination meta, adjust if needed
     } catch (err) {
       console.error("Error fetching prescriptions:", err);
     }
@@ -92,13 +106,31 @@ const PatientMedicalHistory = () => {
       setError(null);
       await Promise.all([
         fetchPatient(),
-        fetchMedicalRecords(),
-        fetchPrescriptions(),
+        fetchMedicalRecords(recordsPage),
+        fetchPrescriptions(prescriptionsPage),
       ]);
       setLoading(false);
     };
     fetchData();
   }, [patientId]);
+
+  // Fetch data when page changes
+  useEffect(() => {
+    if (activeTab === "records" && recordsPage > 0) {
+      fetchMedicalRecords(recordsPage);
+    } else if (activeTab === "prescriptions" && prescriptionsPage > 0) {
+      fetchPrescriptions(prescriptionsPage);
+    }
+  }, [recordsPage, prescriptionsPage, activeTab]);
+  
+  // Reset to page 1 when switching tabs
+  useEffect(() => {
+    if (activeTab === "records") {
+      setRecordsPage(1);
+    } else {
+      setPrescriptionsPage(1);
+    }
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -194,7 +226,7 @@ const PatientMedicalHistory = () => {
               }`}>
               <div className="flex items-center gap-2">
                 <FiFileText className="w-4 h-4" />
-                Medical Records ({medicalRecords.length})
+                Medical Records ({recordsMeta.total || medicalRecords.length})
               </div>
             </button>
             <button
@@ -374,6 +406,42 @@ const PatientMedicalHistory = () => {
                 </div>
               ))
             )}
+            
+            {/* Pagination for Medical Records */}
+            {medicalRecords.length > 0 && recordsMeta.pages > 1 && (
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600">
+                    Showing {((recordsPage - 1) * recordsMeta.limit) + 1} to{" "}
+                    {Math.min(recordsPage * recordsMeta.limit, recordsMeta.total)} of{" "}
+                    {recordsMeta.total} records
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="small"
+                      onClick={() => setRecordsPage(prev => Math.max(1, prev - 1))}
+                      disabled={recordsPage === 1}
+                      className="flex items-center gap-1">
+                      <FiChevronLeft className="w-4 h-4" />
+                      Previous
+                    </Button>
+                    <span className="px-4 py-2 text-sm font-medium text-gray-700">
+                      Page {recordsPage} of {recordsMeta.pages}
+                    </span>
+                    <Button
+                      variant="outline"
+                      size="small"
+                      onClick={() => setRecordsPage(prev => Math.min(recordsMeta.pages, prev + 1))}
+                      disabled={recordsPage === recordsMeta.pages}
+                      className="flex items-center gap-1">
+                      Next
+                      <FiChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -473,6 +541,18 @@ const PatientMedicalHistory = () => {
                   </div>
                 </div>
               ))
+            )}
+            
+            {/* Pagination for Prescriptions */}
+            {prescriptions.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600">
+                    Showing {prescriptions.length} prescription{prescriptions.length !== 1 ? 's' : ''}
+                  </p>
+                  {/* Note: Add proper pagination when API supports it */}
+                </div>
+              </div>
             )}
           </div>
         )}

@@ -16,7 +16,8 @@ const auditMiddleware = (action) => {
                 });
             }
         } catch (error) {
-            console.error("Audit Logging Error:", error.message);
+            const logger = require("../utils/logger");
+            logger.error("Audit Logging Error", { error: error.message, stack: error.stack });
         }
         next();
     };
