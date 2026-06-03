@@ -55,13 +55,14 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-  if (isPublicRoute) {
-    setLoading(false);
-    return;
-  }
+    if (isPublicRoute) {
+      setLoading(false);
+      return;
+    }
 
-  fetchUser();
-}, [location.pathname]);
+    setLoading(true);
+    fetchUser();
+  }, [location.pathname]);
 
   // Logout
   const logout = async () => {

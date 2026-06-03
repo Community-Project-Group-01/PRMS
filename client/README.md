@@ -142,10 +142,10 @@ client/
    Create a `.env` file in the client directory:
 
    ```env
-   VITE_API_URL=http://localhost:5000/api
+   VITE_API_URL=
    ```
 
-   **Note**: The API base URL should include `/api` at the end. The Axios client will use this URL to make requests to the backend.
+   **Local dev**: Leave `VITE_API_URL` empty. Vite proxies `/api` to `http://localhost:5000` so auth cookies work on the same origin (`localhost:5173`). Start the backend on port 5000 before `npm run dev`.
 
 3. **Start development server:**
 
@@ -202,7 +202,7 @@ export default defineConfig({
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+  baseURL: "" // dev: empty uses Vite proxy; production: set VITE_API_URL to API host
   withCredentials: true,
 });
 ```
@@ -239,10 +239,10 @@ npm run build
 ### **Environment Variables for Production**
 
 ```env
-VITE_API_URL=https://your-api-domain.com/api
+VITE_API_URL=https://your-api-domain.com
 ```
 
-**Important**: Make sure the production API URL includes `/api` at the end, and that CORS is properly configured on the backend to allow requests from your frontend domain.
+**Important**: Do not add `/api` to `VITE_API_URL`; axios paths already start with `/api/...`. Ensure CORS on the backend allows your frontend origin.
 
 ## 🐛 Troubleshooting
 

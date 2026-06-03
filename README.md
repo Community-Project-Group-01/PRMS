@@ -561,7 +561,7 @@ Make sure to set these environment variables in your production environment:
 
 **Client Environment:**
 
-- `VITE_API_URL=your_backend_api_url/api`
+- `VITE_API_URL=your_backend_api_url` (no `/api` suffix; request paths already include `/api`)
 
 ## 🤝 Contributing
 
