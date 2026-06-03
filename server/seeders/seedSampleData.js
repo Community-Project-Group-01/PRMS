@@ -1,16 +1,22 @@
-require("dotenv").config({ path: "../.env" });
-const mongoose = require("mongoose");
+require("../config/loadEnv");
 const bcrypt = require("bcrypt");
+const { connectDB } = require("../config/db");
 const { User } = require("../models/User");
 const { Patient } = require("../models/Patient");
 const { Doctor } = require("../models/Doctor");
 const { MedicalRecord } = require("../models/MedicalRecord");
 const { Prescription } = require("../models/Prescription");
 
-// MongoDB connection string
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://prms:prms1234@cluster0.8kuookx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/prms";
+const calculateAge = (dob) => {
+  const birthDate = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age >= 0 ? age : 0;
+};
 
 const sampleData = {
   patients: [
@@ -19,6 +25,7 @@ const sampleData = {
       email: "john.smith@email.com",
       nic: "123456789V",
       patientType: "student",
+      gender: "male",
       allergies: ["Penicillin", "Shellfish"],
       contact: "0771234567",
       address: "123 University Avenue, Colombo 03",
@@ -29,6 +36,7 @@ const sampleData = {
       email: "sarah.johnson@email.com",
       nic: "987654321V",
       patientType: "public",
+      gender: "female",
       allergies: ["Latex"],
       contact: "0712345678",
       address: "456 Main Street, Kandy",
@@ -39,6 +47,7 @@ const sampleData = {
       email: "michael.brown@email.com",
       nic: "456789123V",
       patientType: "staff",
+      gender: "male",
       allergies: [],
       contact: "0723456789",
       address: "789 Faculty Road, Colombo 07",
@@ -49,6 +58,7 @@ const sampleData = {
       email: "emily.davis@email.com",
       nic: "789123456V",
       patientType: "student",
+      gender: "female",
       allergies: ["Peanuts"],
       contact: "0734567890",
       address: "321 Campus Drive, Colombo 05",
@@ -59,6 +69,7 @@ const sampleData = {
       email: "david.wilson@email.com",
       nic: "321654987V",
       patientType: "public",
+      gender: "male",
       allergies: ["Aspirin"],
       contact: "0745678901",
       address: "654 Health Street, Galle",
@@ -69,6 +80,7 @@ const sampleData = {
       email: "lisa.anderson@email.com",
       nic: "654987321V",
       patientType: "staff",
+      gender: "female",
       allergies: ["Dust mites"],
       contact: "0756789012",
       address: "987 Staff Quarters, Colombo 06",
@@ -79,6 +91,7 @@ const sampleData = {
       email: "robert.taylor@email.com",
       nic: "147258369V",
       patientType: "student",
+      gender: "male",
       allergies: [],
       contact: "0767890123",
       address: "147 Student Hall, Colombo 03",
@@ -89,6 +102,7 @@ const sampleData = {
       email: "jennifer.martinez@email.com",
       nic: "258369147V",
       patientType: "public",
+      gender: "female",
       allergies: ["Sulfa drugs"],
       contact: "0778901234",
       address: "258 Community Road, Negombo",
@@ -141,7 +155,7 @@ const sampleData = {
 
 const createSampleData = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
+    await connectDB();
     console.log("Connected to MongoDB");
 
     // Clear existing data (optional - comment out if you want to keep existing data)
@@ -172,6 +186,8 @@ const createSampleData = async () => {
         nic: patientData.nic,
         user: user._id,
         patientType: patientData.patientType,
+        gender: patientData.gender,
+        age: calculateAge(patientData.dob),
         allergies: patientData.allergies,
         contact: patientData.contact,
         address: patientData.address,

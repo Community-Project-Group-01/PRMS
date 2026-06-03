@@ -1,16 +1,11 @@
-require("dotenv").config({ path: "../.env" });
-const mongoose = require("mongoose");
+require("../config/loadEnv");
 const bcrypt = require("bcrypt");
+const { connectDB } = require("../config/db");
 const { User } = require("../models/User");
-
-// MongoDB connection string
-const MONGODB_URI =
-  process.env.MONGODB_URI ||
-  "mongodb+srv://prms:prms1234@cluster0.8kuookx.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0/prms";
 
 const createSuperAdmin = async () => {
   try {
-    await mongoose.connect(MONGODB_URI);
+    await connectDB();
     const existingAdmin = await User.findOne({ role: "admin" });
     if (existingAdmin) {
       console.log("SuperAdmin already exists:", existingAdmin.email);
