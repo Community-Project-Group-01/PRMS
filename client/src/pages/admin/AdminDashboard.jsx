@@ -4,6 +4,7 @@ import Overview from "../../components/admin/Overview";
 import Patients from "../../components/admin/Patients";
 import Doctors from "../../components/admin/Doctors";
 import Inventory from "../../components/admin/Inventory";
+import Profile from "../../components/admin/Profile";
 
 const AdminDashboard = ({ section }) => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const AdminDashboard = ({ section }) => {
         return <Doctors />;
       case "inventory":
         return <Inventory />;
+      case "profile":
+        return <Profile />;
       default:
         return (
           <div className="flex items-center justify-center h-64">

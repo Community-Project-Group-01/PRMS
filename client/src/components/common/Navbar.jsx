@@ -20,7 +20,7 @@ const Navbar = () => {
 
   const navItems = [
     { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
-    { href: `/profile/${user?.role}`, label: "Profile", icon: FaUser },
+    { href: `/dashboard/${user?.role}/profile`, label: "Profile", icon: FaUser },
   ];
 
   const toggleMobileMenu = () => {

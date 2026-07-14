@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Overview from "../../components/doctor/Overview";
 import Appointments from "../../components/doctor/Appointments";
 import Patients from "../../components/doctor/Patients";
+import Profile from "../../components/doctor/Profile";
 
 const DoctorDashboard = ({ section }) => {
   const navigate = useNavigate();
@@ -28,6 +29,8 @@ const DoctorDashboard = ({ section }) => {
         return <Appointments />;
       case "patients":
         return <Patients />;
+      case "profile":
+        return <Profile />;
       default:
         return (
           <div className="flex items-center justify-center h-64">

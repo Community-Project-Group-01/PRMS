@@ -37,7 +37,7 @@ const Footer = () => {
   const { user } = useAppContext();
   const quickLinks = [
     { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
-    { href: `/profile/${user?.role}`, label: "Profile", icon: FaUser },
+    { href: `/dashboard/${user?.role}/profile`, label: "Profile", icon: FaUser },
   ];
 
   const legalLinks = [

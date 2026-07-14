@@ -55,14 +55,17 @@ export const AppContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    if (isPublicRoute) {
+    // Only verify the session once (on initial load / login), not on every
+    // in-app navigation — re-running this on every route change was hiding
+    // the whole app behind `loading` on every sidebar click.
+    if (isPublicRoute || !user || userDetails) {
       setLoading(false);
       return;
     }
 
-    setLoading(true);
     fetchUser();
-  }, [location.pathname]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isPublicRoute]);
 
   // Logout
   const logout = async () => {
@@ -72,6 +75,7 @@ export const AppContextProvider = ({ children }) => {
 
       if (data.success) {
         setUser(null);
+        setUserDetails(null);
         localStorage.clear();
         toast.success(data.message || "Logout successful");
         navigate("/login");
@@ -92,6 +96,7 @@ export const AppContextProvider = ({ children }) => {
     logout,
     loading,
     userDetails,
+    refreshUser: fetchUser,
   };
 
   return (

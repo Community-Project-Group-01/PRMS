@@ -125,7 +125,7 @@ const updateDoctor = async (req, res) => {
 
         // License number uniqueness check
         if (licenseNumber) {
-            const existingLicense = await Doctor.findOne({ licenseNumber, _id: { $ne: doctorId } });
+            const existingLicense = await Doctor.findOne({ licenseNumber, _id: { $ne: doctor._id } });
             if (existingLicense) {
                 return res.status(409).json({ success: false, message: "License number already registered" });
             }
