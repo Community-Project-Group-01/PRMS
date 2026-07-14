@@ -1,8 +1,11 @@
+const bcrypt = require("bcrypt");
 const { User } = require("../models/User");
 const { Patient } = require("../models/Patient");
 const { Doctor } = require("../models/Doctor");
 const { MedicalRecord } = require("../models/MedicalRecord");
 const { Prescription } = require("../models/Prescription");
+const { emailValidator } = require("../utils/validator");
+const logger = require("../utils/logger");
 
 const getAdminStats = async (req, res) => {
   try {
@@ -128,4 +131,55 @@ const getAdminStats = async (req, res) => {
   }
 };
 
-module.exports = { getAdminStats };
+// Update the logged-in admin's own profile (name, email, password)
+const updateAdmin = async (req, res) => {
+  try {
+    const adminId = req.user._id;
+    const { name, email, password } = req.body;
+
+    const admin = await User.findById(adminId);
+    if (!admin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    if (email && !emailValidator(email)) {
+      return res.status(400).json({ success: false, message: "Invalid email format" });
+    }
+
+    if (email) {
+      const existingUser = await User.findOne({ email, _id: { $ne: admin._id } });
+      if (existingUser) {
+        return res.status(409).json({ success: false, message: "Email already registered" });
+      }
+    }
+
+    if (password && password.length < 8) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long",
+      });
+    }
+
+    if (name) admin.name = name;
+    if (email) admin.email = email;
+    if (password) admin.password = await bcrypt.hash(password, 10);
+
+    await admin.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: {
+        id: admin._id,
+        name: admin.name,
+        email: admin.email,
+        role: admin.role,
+      },
+    });
+  } catch (error) {
+    logger.error("Error in updateAdmin", { error: error.message, stack: error.stack });
+    return res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+module.exports = { getAdminStats, updateAdmin };

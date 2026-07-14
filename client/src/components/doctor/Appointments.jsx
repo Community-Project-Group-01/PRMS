@@ -14,12 +14,15 @@ import api from "../../api/client";
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [status, setStatus] = useState("Queue");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const fetchAppointments = async () => {
     setLoading(true);
@@ -102,17 +105,6 @@ const Appointments = () => {
       hour: "2-digit",
       minute: "2-digit",
     });
-
-  if (loading && appointments.length === 0) {
-    return (
-      <Spinner
-        className="mt-10"
-        size="large"
-        showText
-        text="Loading appointments..."
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -329,13 +321,21 @@ const Appointments = () => {
                       </div>
                     )}
                     {appointment.status === "Consultation" && (
-                      <div className="border-t border-gray-100 pt-4 mt-4">
+                      <div className="flex justify-start gap-4 border-t border-gray-100 pt-4 mt-4">
                         <Button
                           onClick={() => changeState("Closed", appointment._id)}
                           variant="outline"
                           size="small"
-                          className="text-red-600 border-red-600 hover:bg-red-600 hover:text-white">
-                          Close
+                          className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white">
+                          Close Appointment
+                        </Button>
+                        <Button
+                          onClick={() =>
+                            navigate(`/appointment/${patient._id}`)
+                          }
+                          variant="primary"
+                          size="small">
+                          Start Consultation
                         </Button>
                       </div>
                     )}

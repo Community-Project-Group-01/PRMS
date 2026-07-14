@@ -35,10 +35,6 @@ const ContactItem = ({ icon: Icon, children }) => (
 
 const Footer = () => {
   const { user } = useAppContext();
-  const quickLinks = [
-    { href: `/dashboard/${user?.role}`, label: "Dashboard", icon: FaChartPie },
-    { href: `/profile/${user?.role}`, label: "Profile", icon: FaUser },
-  ];
 
   const legalLinks = [
     { href: "/privacy", label: "Privacy Policy" },
@@ -71,17 +67,6 @@ const Footer = () => {
               <ContactItem icon={FaEnvelope}>health@university.edu</ContactItem>
             </div>
           </div>
-
-          {/* Quick Links */}
-          <FooterSection title="Quick Links">
-            <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <FooterLink key={link.href} href={link.href}>
-                  {link.label}
-                </FooterLink>
-              ))}
-            </ul>
-          </FooterSection>
 
           {/* Contact Info */}
           <FooterSection title="Contact Info">

@@ -13,6 +13,7 @@ const { userRouter } = require("./routes/userRoutes");
 const { medicalRecordRouter } = require("./routes/medicalRecordRoutes");
 const { prescriptionRouter } = require("./routes/prescriptionRoutes");
 const { appointmentRouter } = require("./routes/appointmentRoutes");
+const { inventoryRouter } = require("./routes/inventoryRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
@@ -49,6 +50,7 @@ app.use("/api/user", userRouter);
 app.use("/api/med", medicalRecordRouter);
 app.use("/api/prescription", prescriptionRouter);
 app.use("/api/appointment", appointmentRouter);
+app.use("/api/inventory", inventoryRouter);
 app.use("/api/admin", adminRoutes);
 
 // ---------------------- Error Handling ----------------------

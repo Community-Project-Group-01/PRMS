@@ -6,6 +6,7 @@ import {
   FaCalendarAlt,
   FaChevronRight,
   FaFileMedical,
+  FaUser,
 } from "react-icons/fa";
 
 const sidebarItems = {
@@ -14,11 +15,13 @@ const sidebarItems = {
     { name: "Doctors", icon: <FaUserMd />, path: "doctors" },
     { name: "Patients", icon: <FaUsers />, path: "patients" },
     { name: "Inventory", icon: <FaFileMedical />, path: "inventory" },
+    { name: "Profile", icon: <FaUser />, path: "profile" },
   ],
   doctor: [
     { name: "Overview", icon: <FaHome />, path: "overview" },
     { name: "Patients", icon: <FaUsers />, path: "patients" },
     { name: "Appointments", icon: <FaCalendarAlt />, path: "appointments" },
+    { name: "Profile", icon: <FaUser />, path: "profile" },
   ],
 };
 

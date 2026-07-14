@@ -13,6 +13,7 @@ import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -23,6 +24,11 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const [showDoctorModal, setShowDoctorModal] = useState(false);
+  const [doctors, setDoctors] = useState([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [bookingAppointment, setBookingAppointment] = useState(false);
   const navigate = useNavigate();
 
   // Calculate age from date of birth
@@ -140,6 +146,71 @@ const Patients = () => {
 
   const handleAddPatient = () => {
     navigate("/dashboard/admin/add-patient");
+  };
+
+  const handleAppointment = async () => {
+    try {
+      setLoadingDoctors(true);
+      setShowDoctorModal(true);
+      setSelectedDoctor(null);
+
+      const response = await api.get("/api/doctor/getDoctor", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      const data = response.data;
+      setDoctors(data.data || []);
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to fetch doctors";
+      console.error("Error fetching doctors:", err);
+      alert(errorMessage);
+    } finally {
+      setLoadingDoctors(false);
+    }
+  };
+
+  const handleCloseDoctorModal = () => {
+    setShowDoctorModal(false);
+    setSelectedDoctor(null);
+  };
+
+  const handleConfirmAppointment = async () => {
+    if (!selectedDoctor || !selectedPatient) return;
+
+    try {
+      setBookingAppointment(true);
+
+      await api.post(
+        "/api/appointment/create",
+        {
+          doctorId: selectedDoctor.user?._id,
+          patientId: selectedPatient.user?._id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      toast.success("Appointment created successfully");
+      handleCloseDoctorModal();
+      setSelectedPatient(null);
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to create appointment";
+      console.error("Error creating appointment:", err);
+      toast.error(errorMessage);
+    } finally {
+      setBookingAppointment(false);
+    }
   };
 
   if (loading) {
@@ -523,36 +594,117 @@ const Patients = () => {
                       </div>
                     )}
 
-                    {/* Allergies */}
-                    {selectedPatient.allergies &&
-                      selectedPatient.allergies.length > 0 && (
-                        <div className="mb-8">
-                          <h3 className="text-lg font-semibold text-gray-800 mb-6 pb-2 border-b border-gray-200">
-                            Allergies
-                          </h3>
-                          <div className="flex flex-wrap gap-3">
-                            {selectedPatient.allergies.map((allergy, index) => (
-                              <span
-                                key={index}
-                                className="px-4 py-2 bg-red-50 text-red-700 text-sm font-medium rounded-full border border-red-200">
-                                {allergy}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
                     {/* Action Buttons */}
                     <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
                       <Button
-                        variant="primary"
+                        variant="outline"
                         size="large"
-                        className="bg-primary hover:bg-primary-dark min-w-[120px]"
+                        className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white"
                         onClick={() => setSelectedPatient(null)}>
                         Close
                       </Button>
+                      <Button
+                        variant="primary"
+                        size="medium"
+                        className="min-w-[140px] flex items-center justify-center bg-primary hover:bg-primary-dark"
+                        onClick={handleAppointment}>
+                        Appoint to a Doctor
+                      </Button>
                     </div>
                   </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Doctor Selection Modal */}
+        {showDoctorModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              {/* Modal Header */}
+              <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-6 rounded-t-2xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-2xl font-bold">Select a Doctor</h2>
+                    <p className="text-white/90 text-sm">
+                      Choose an available doctor for this appointment
+                    </p>
+                  </div>
+                  <button
+                    onClick={handleCloseDoctorModal}
+                    className="text-white hover:text-white/80 text-2xl p-2 rounded-full hover:bg-white/10 transition-colors flex items-center justify-center w-10 h-10">
+                    <FiX className="w-6 h-6" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Modal Content */}
+              <div className="p-8">
+                {loadingDoctors ? (
+                  <div className="flex justify-center py-12">
+                    <Spinner size="large" variant="primary" />
+                  </div>
+                ) : doctors.length === 0 ? (
+                  <p className="text-center text-gray-500 py-12">
+                    No doctors available.
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {doctors.map((doctor) => (
+                      <div
+                        key={doctor._id}
+                        onClick={() => setSelectedDoctor(doctor)}
+                        className={`flex items-center justify-between p-4 rounded-xl border-2 cursor-pointer transition-colors ${
+                          selectedDoctor?._id === doctor._id
+                            ? "border-primary bg-primary/5"
+                            : "border-gray-200 hover:border-primary/50"
+                        }`}>
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg">
+                            {doctor.user?.name?.charAt(0).toUpperCase() || "D"}
+                          </div>
+                          <div>
+                            <p className="text-base font-semibold text-gray-800">
+                              Dr. {doctor.user?.name || "Unknown"}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              {doctor.specialization || "N/A"}
+                            </p>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-xs font-medium px-3 py-1 rounded-full ${
+                            doctor.isAvailable
+                              ? "bg-green-100 text-green-800"
+                              : "bg-gray-100 text-gray-600"
+                          }`}>
+                          {doctor.isAvailable ? "Available" : "Unavailable"}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                {selectedDoctor && (
+                  <div className="flex justify-end gap-4 pt-6 mt-6 border-t border-gray-200">
+                    <Button
+                      variant="outline"
+                      size="large"
+                      className="min-w-[120px] flex items-center justify-center border-primary text-primary hover:bg-primary hover:text-white"
+                      onClick={handleCloseDoctorModal}>
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="medium"
+                      loading={bookingAppointment}
+                      className="min-w-[180px] flex items-center justify-center bg-primary hover:bg-primary-dark"
+                      onClick={handleConfirmAppointment}>
+                      Confirm Appointment
+                    </Button>
+                  </div>
                 )}
               </div>
             </div>

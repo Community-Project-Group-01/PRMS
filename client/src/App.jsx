@@ -12,6 +12,7 @@ import { useAppContext } from "./context/AppContext";
 import Dashboard from "./pages/Dashboard";
 import DoctorForm from "./components/forms/DoctorForm";
 import PatientForm from "./components/forms/PatientForm";
+import InventoryForm from "./components/forms/InventoryForm";
 import MedicalRecordForm from "./components/medical/MedicalRecordForm";
 import PatientMedicalHistory from "./components/doctor/PatientMedicalHistory";
 
@@ -53,6 +54,14 @@ const App = () => {
             <Route
               path="/dashboard/admin/add-patient"
               element={<PatientForm />}
+            />
+            <Route
+              path="/dashboard/admin/add-inventory"
+              element={<InventoryForm />}
+            />
+            <Route
+              path="/dashboard/admin/edit-inventory/:id"
+              element={<InventoryForm />}
             />
             <Route
               path="/appointment/:patientId"
