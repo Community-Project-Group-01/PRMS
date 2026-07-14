@@ -52,7 +52,7 @@ const PrescriptionItem = ({
           {showNoStockWarning && (
             <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
               <FaExclamationTriangle className="flex-shrink-0" />
-              No Stock Available — patient may need to purchase from another
+              Out of Stock — patient may need to purchase from another
               pharmacy
             </p>
           )}

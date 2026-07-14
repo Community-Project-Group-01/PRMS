@@ -320,12 +320,12 @@ const Inventory = () => {
                       </td>
                       <td className="px-6 py-4">
                         {item.stockLevel > 0 ? (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                          <span className="inline-flex text-nowrap items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             {item.stockLevel} in stock
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                            No Stock Available
+                          <span className="inline-flex text-nowrap items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                           Out of Stock
                           </span>
                         )}
                       </td>
@@ -423,7 +423,7 @@ const Inventory = () => {
                         </p>
                       ) : (
                         <p className="text-lg font-semibold text-red-600">
-                          No Stock Available
+                          Out of Stock
                         </p>
                       )}
                     </div>
