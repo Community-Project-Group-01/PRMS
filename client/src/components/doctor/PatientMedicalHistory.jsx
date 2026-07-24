@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   FiArrowLeft,
@@ -12,10 +12,13 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
-import { FaPills } from "react-icons/fa";
+import { FaPills, FaFilePdf } from "react-icons/fa";
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
+
+// Loaded on demand: @react-pdf/renderer is a heavy dependency, only needed when a prescription PDF is opened
+const PrescriptionPDFModal = lazy(() => import("./PrescriptionPDFModal"));
 
 const PatientMedicalHistory = () => {
   const { patientId } = useParams();
@@ -26,7 +29,8 @@ const PatientMedicalHistory = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("records"); // 'records' or 'prescriptions'
-  
+  const [pdfPrescription, setPdfPrescription] = useState(null);
+
   // Pagination states
   const [recordsPage, setRecordsPage] = useState(1);
   const [prescriptionsPage, setPrescriptionsPage] = useState(1);
@@ -479,6 +483,14 @@ const PatientMedicalHistory = () => {
                           )}
                         </div>
                       </div>
+                      <Button
+                        variant="outline"
+                        size="small"
+                        onClick={() => setPdfPrescription(prescription)}
+                        className="!text-white !border-white hover:!bg-white hover:!text-primary-dark flex items-center gap-1.5 flex-shrink-0">
+                        <FaFilePdf className="w-4 h-4" />
+                        View PDF
+                      </Button>
                     </div>
                   </div>
 
@@ -557,6 +569,22 @@ const PatientMedicalHistory = () => {
           </div>
         )}
       </div>
+
+      {/* Prescription PDF Modal */}
+      {pdfPrescription && (
+        <Suspense
+          fallback={
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <Spinner size="large" variant="primary" showText text="Loading PDF viewer..." />
+            </div>
+          }>
+          <PrescriptionPDFModal
+            prescription={pdfPrescription}
+            patient={patient}
+            onClose={() => setPdfPrescription(null)}
+          />
+        </Suspense>
+      )}
     </div>
   );
 };

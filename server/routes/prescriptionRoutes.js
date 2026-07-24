@@ -1,5 +1,8 @@
 const express = require("express");
 const { protectedRoutes } = require("../middleware/protectedRoutes");
+const { authorize } = require("../middleware/authorize");
+const { validate } = require("../middleware/validate");
+const { objectIdParams } = require("../validations/common");
 const {
   getPrescriptionsByPatient,
   getPrescriptionById,
@@ -12,10 +15,25 @@ const prescriptionRouter = express.Router();
 prescriptionRouter.get(
   "/patient/:id",
   protectedRoutes,
+  authorize("admin", "doctor"),
+  validate(objectIdParams("id"), "params"),
   getPrescriptionsByPatient
 );
-prescriptionRouter.get("/:id", protectedRoutes, getPrescriptionById);
-prescriptionRouter.delete("/:id", protectedRoutes, deletePrescription);
-prescriptionRouter.get("/get", protectedRoutes, getPrescriptionsByDoctor);
+// Must come before "/:id" - otherwise Express would match "get" as an :id value.
+prescriptionRouter.get("/get", protectedRoutes, authorize("doctor"), getPrescriptionsByDoctor);
+prescriptionRouter.get(
+  "/:id",
+  protectedRoutes,
+  authorize("admin", "doctor"),
+  validate(objectIdParams("id"), "params"),
+  getPrescriptionById
+);
+prescriptionRouter.delete(
+  "/:id",
+  protectedRoutes,
+  authorize("admin", "doctor"),
+  validate(objectIdParams("id"), "params"),
+  deletePrescription
+);
 
 module.exports = { prescriptionRouter };

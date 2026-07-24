@@ -7,6 +7,7 @@ const compression = require("compression");
 const morgan = require("morgan");
 const { connectDB } = require("./config/db");
 const cookieParser = require("cookie-parser");
+const { apiLimiter } = require("./middleware/rateLimiter");
 const { patientRouter } = require("./routes/patientRoutes");
 const { doctorRouter } = require("./routes/doctorRoutes");
 const { userRouter } = require("./routes/userRoutes");
@@ -17,6 +18,12 @@ const { inventoryRouter } = require("./routes/inventoryRoutes");
 const adminRoutes = require("./routes/adminRoutes");
 
 const app = express();
+
+// Trust the first proxy hop (e.g. Render/Heroku/nginx) in production so
+// req.ip and the rate limiter see the real client IP instead of the proxy's.
+if (process.env.NODE_ENV === "production") {
+  app.set("trust proxy", 1);
+}
 
 // ---------------------- Middleware ----------------------
 app.use(
@@ -29,6 +36,7 @@ app.use(express.json({ limit: "10kb" }));
 app.use(helmet());
 app.use(compression());
 app.use(cookieParser());
+app.use("/api", apiLimiter);
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));

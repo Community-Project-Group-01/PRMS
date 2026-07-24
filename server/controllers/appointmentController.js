@@ -109,7 +109,7 @@ const updateAppointment = async (req, res) => {
 // Get a specific appointment by ID
 const getAppointmentById = async (req, res) => {
     try {
-        const { appointmentId } = req.params;
+        const { id: appointmentId } = req.params;
         const userId = req.user._id;
 
         const doctor = await Doctor.findOne({ user: userId });

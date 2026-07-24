@@ -7,3 +7,12 @@
   --color-secondary-dark: #90d1ca;
   --color-white: #fafafa;
 }
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

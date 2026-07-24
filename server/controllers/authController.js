@@ -10,9 +10,6 @@ const { sendPasswordResetEmail } = require("../utils/emailService")
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body
-        if (!email || !password) {
-            return res.status(400).json({ success: false, message: "All fields Required" })
-        }
         const user = await User.findOne({ email })
         if (!user) {
             return res.status(404).json({ success: false, message: "No user found" })
@@ -100,13 +97,6 @@ const forgotPassword = async (req, res) => {
     try {
         const { email } = req.body;
 
-        if (!email) {
-            return res.status(400).json({
-                success: false,
-                message: "Email is required",
-            });
-        }
-
         const user = await User.findOne({ email });
 
         // Don't reveal if user exists or not for security
@@ -166,21 +156,6 @@ const forgotPassword = async (req, res) => {
 const resetPassword = async (req, res) => {
     try {
         const { token, newPassword } = req.body;
-
-        if (!token || !newPassword) {
-            return res.status(400).json({
-                success: false,
-                message: "Token and new password are required",
-            });
-        }
-
-        // Validate password strength
-        if (newPassword.length < 8) {
-            return res.status(400).json({
-                success: false,
-                message: "Password must be at least 8 characters long",
-            });
-        }
 
         // Find user with valid reset token
         const user = await User.findOne({

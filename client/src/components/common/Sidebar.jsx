@@ -44,8 +44,10 @@ const Sidebar = ({ role }) => {
 
   return (
     <aside
-      className="p-4 w-20 lg:w-64 bg-primary-dark rounded-2xl shadow-xl 
-                 h-4/5 sticky top-6 transition-all duration-300 flex flex-col items-center lg:items-start">
+      className="p-4 w-20 lg:w-54 bg-primary-dark rounded-2xl shadow-xl 
+                 h-4/5 sticky top-6 transition-all duration-300 flex flex-col items-start justify-between">
+      
+      <div>
       {/* Sidebar Header */}
       <div className="mb-8 hidden lg:block">
         <h2 className="text-white text-xl font-bold capitalize">
@@ -63,7 +65,7 @@ const Sidebar = ({ role }) => {
               <button
                 onClick={() => handleClick(item)}
                 className={`w-full flex items-center justify-center lg:justify-between 
-                            gap-3 py-3 px-4 rounded-xl cursor-pointer transition-all duration-300 
+                            gap-3 py-2 px-2 rounded-xl cursor-pointer transition-all duration-300 
                             relative overflow-hidden
                             ${
                               isActive
@@ -119,6 +121,7 @@ const Sidebar = ({ role }) => {
           );
         })}
       </ul>
+      </div>
 
       {/* User Profile */}
       <div className="mt-8 pt-6 border-t border-white/20 w-full hidden lg:block">
