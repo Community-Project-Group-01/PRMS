@@ -4,8 +4,11 @@ const { Patient } = require("../models/Patient");
 const { Doctor } = require("../models/Doctor");
 const { MedicalRecord } = require("../models/MedicalRecord");
 const { Prescription } = require("../models/Prescription");
-const { emailValidator } = require("../utils/validator");
+const Appointment = require("../models/Appoinment");
+const { Inventory } = require("../models/Inventory");
 const logger = require("../utils/logger");
+
+const LOW_STOCK_THRESHOLD = 10;
 
 const getAdminStats = async (req, res) => {
   try {
@@ -98,6 +101,47 @@ const getAdminStats = async (req, res) => {
       .sort({ createdAt: -1 })
       .limit(5);
 
+    // Queue / consultation snapshot
+    const [queueCount, consultationCount] = await Promise.all([
+      Appointment.countDocuments({ status: "Queue" }),
+      Appointment.countDocuments({ status: "Consultation" }),
+    ]);
+
+    const activeAppointments = await Appointment.find({
+      status: { $in: ["Queue", "Consultation"] },
+    })
+      .populate({
+        path: "patient",
+        select: "nic patientType",
+        populate: { path: "user", select: "name" },
+      })
+      .populate({
+        path: "doctor",
+        select: "specialization",
+        populate: { path: "user", select: "name" },
+      })
+      .sort({ status: 1, createdAt: 1 })
+      .limit(10);
+
+    // Inventory stock alerts
+    const [lowStockItems, outOfStockItems, lowStockCount, outOfStockCount] =
+      await Promise.all([
+        Inventory.find({
+          stockLevel: { $gt: 0, $lte: LOW_STOCK_THRESHOLD },
+        })
+          .select("brandName genericName stockLevel inventoryType")
+          .sort({ stockLevel: 1 })
+          .limit(10),
+        Inventory.find({ stockLevel: { $lte: 0 } })
+          .select("brandName genericName stockLevel inventoryType")
+          .sort({ updatedAt: -1 })
+          .limit(10),
+        Inventory.countDocuments({
+          stockLevel: { $gt: 0, $lte: LOW_STOCK_THRESHOLD },
+        }),
+        Inventory.countDocuments({ stockLevel: { $lte: 0 } }),
+      ]);
+
     res.status(200).json({
       success: true,
       data: {
@@ -119,6 +163,18 @@ const getAdminStats = async (req, res) => {
           monthlyRecords: monthlyRecords,
         },
         recentActivity: recentRecords,
+        queue: {
+          inQueue: queueCount,
+          inConsultation: consultationCount,
+          active: activeAppointments,
+        },
+        inventoryAlerts: {
+          lowStockThreshold: LOW_STOCK_THRESHOLD,
+          lowStockCount,
+          outOfStockCount,
+          lowStockItems,
+          outOfStockItems,
+        },
       },
     });
   } catch (error) {
@@ -142,22 +198,11 @@ const updateAdmin = async (req, res) => {
       return res.status(404).json({ success: false, message: "Admin not found" });
     }
 
-    if (email && !emailValidator(email)) {
-      return res.status(400).json({ success: false, message: "Invalid email format" });
-    }
-
     if (email) {
       const existingUser = await User.findOne({ email, _id: { $ne: admin._id } });
       if (existingUser) {
         return res.status(409).json({ success: false, message: "Email already registered" });
       }
-    }
-
-    if (password && password.length < 8) {
-      return res.status(400).json({
-        success: false,
-        message: "Password must be at least 8 characters long",
-      });
     }
 
     if (name) admin.name = name;

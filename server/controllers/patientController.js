@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const { emailValidator, validateSriLankanNIC, mobileNumberValidator } = require("../utils/validator");
 const { User } = require("../models/User");
 const { Patient } = require("../models/Patient");
 const { generatePassword } = require("../utils/generatePassword");
@@ -13,7 +12,6 @@ const registerPatient = async (req, res) => {
         const {
             name,
             email,
-            role,
             nic,
             patientType,
             allergies,
@@ -23,26 +21,6 @@ const registerPatient = async (req, res) => {
             age,
             gender,
         } = req.body;
-
-        // Validate required fields
-        if (!name || !email || !role || !nic || !contact || !gender || !age) {
-            return res.status(400).json({ success: false, message: "All required fields must be provided" });
-        }
-
-        // Email validation
-        if (!emailValidator(email)) {
-            return res.status(400).json({ success: false, message: "Invalid email format" });
-        }
-
-        // NIC validation
-        if (!validateSriLankanNIC(nic)) {
-            return res.status(400).json({ success: false, message: "Invalid NIC format" });
-        }
-
-        // Mobile number validation
-        if (!mobileNumberValidator(contact)) {
-            return res.status(400).json({ success: false, message: "Invalid contact number" });
-        }
 
         // Check if email or NIC already exists
         const existingPatient = await User.findOne({ $or: [{ email }, { nic }] });
@@ -55,12 +33,12 @@ const registerPatient = async (req, res) => {
 
         // const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        // Create user
+        // Create user - role is always "patient" here, never taken from the request body
         const newUser = new User({
             name,
             email,
             password: "none",
-            role,
+            role: "patient",
         });
         await newUser.save();
 
@@ -124,18 +102,6 @@ const updatePatient = async (req, res) => {
         if (!patient) {
             return res.status(404).json({ success: false, message: "Patient not found" });
         }
-
-
-        // Email validation
-        if (email && !emailValidator(email)) {
-            return res.status(400).json({ success: false, message: "Invalid email format" });
-        }
-
-        // Mobile number validation
-        if (contact && !mobileNumberValidator(contact)) {
-            return res.status(400).json({ success: false, message: "Invalid contact number" });
-        }
-
 
         // Email uniqueness check
         if (email) {

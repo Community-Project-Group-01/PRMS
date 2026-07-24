@@ -1,41 +1,40 @@
 const bcrypt = require("bcrypt");
-const { emailValidator, mobileNumberValidator } = require("../utils/validator");
 const { User } = require("../models/User");
 const { generatePassword } = require("../utils/generatePassword");
 const { sendCredentialsEmail } = require("../utils/emailService");
 const logger = require("../utils/logger");
 const mongoose = require("mongoose");
 const { Doctor } = require("../models/Doctor");
+const Appointment = require("../models/Appoinment");
+
+// Builds a contiguous array of "YYYY-MM-DD" dates from `start` to today (inclusive)
+// and fills in 0 for any date missing from the aggregation results.
+const fillDailySeries = (aggregateResults, start) => {
+    const countsByDate = new Map(aggregateResults.map((r) => [r._id, r.count]));
+    const series = [];
+    const cursor = new Date(start);
+    cursor.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    while (cursor <= today) {
+        const key = cursor.toISOString().slice(0, 10);
+        series.push({ date: key, count: countsByDate.get(key) || 0 });
+        cursor.setDate(cursor.getDate() + 1);
+    }
+    return series;
+};
 
 const registerDoctor = async (req, res) => {
     try {
         const {
             name,
             email,
-            role,
             specialization,
             licenseNumber,
             yearsOfExperience,
             contact
         } = req.body;
-
-        // Validate required fields
-        if (!name || !email || !role || !specialization || !contact || !licenseNumber || !yearsOfExperience) {
-            return res.status(400).json({ success: false, message: "All required fields must be provided" });
-        }
-
-        // licenseNumber validation
-        if (!emailValidator(email)) {
-            return res.status(400).json({ success: false, message: "Invalid email format" });
-        }
-
-        // licenseNumber validation
-        // <-------------- Need to write logic -------------->
-
-        // Mobile number validation
-        if (!mobileNumberValidator(contact)) {
-            return res.status(400).json({ success: false, message: "Invalid contact number" });
-        }
 
         // Check if email or NIC already exists
         const existingDoctor = await User.findOne({ $or: [{ email }, { licenseNumber }] });
@@ -48,12 +47,12 @@ const registerDoctor = async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
 
-        // Create user
+        // Create user - role is always "doctor" here, never taken from the request body
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
-            role,
+            role: "doctor",
         });
         await newUser.save();
 
@@ -111,16 +110,6 @@ const updateDoctor = async (req, res) => {
 
         if (!doctor) {
             return res.status(404).json({ success: false, message: "Doctor not found" });
-        }
-
-        // Email validation
-        if (email && !emailValidator(email)) {
-            return res.status(400).json({ success: false, message: "Invalid email format" });
-        }
-
-        // Mobile number validation
-        if (contact && !mobileNumberValidator(contact)) {
-            return res.status(400).json({ success: false, message: "Invalid contact number" });
         }
 
         // License number uniqueness check
@@ -239,5 +228,116 @@ const getDoctorById = async (req, res) => {
 };
 
 
-module.exports = { registerDoctor, getAllDoctors, getDoctorById, updateDoctor };
+// Get stats for the logged-in doctor's own dashboard
+const getDoctorStats = async (req, res) => {
+    try {
+        const doctor = await Doctor.findOne({ user: req.user._id }).populate({
+            path: "user",
+            select: "name",
+        });
+        if (!doctor) {
+            return res.status(404).json({ success: false, message: "Doctor not found" });
+        }
+
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        thirtyDaysAgo.setHours(0, 0, 0, 0);
+
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+        tenDaysAgo.setHours(0, 0, 0, 0);
+
+        const [
+            queueCount,
+            consultationCount,
+            closedLast10DaysCount,
+            totalAppointments,
+            uniquePatientIds,
+            last30DaysRaw,
+            closedLast10DaysRaw,
+            statusBreakdown,
+            patientTypeBreakdown,
+        ] = await Promise.all([
+            Appointment.countDocuments({ doctor: doctor._id, status: "Queue" }),
+            Appointment.countDocuments({ doctor: doctor._id, status: "Consultation" }),
+            Appointment.countDocuments({
+                doctor: doctor._id,
+                status: "Closed",
+                updatedAt: { $gte: tenDaysAgo },
+            }),
+            Appointment.countDocuments({ doctor: doctor._id }),
+            Appointment.distinct("patient", { doctor: doctor._id }),
+            Appointment.aggregate([
+                { $match: { doctor: doctor._id, createdAt: { $gte: thirtyDaysAgo } } },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
+            Appointment.aggregate([
+                {
+                    $match: {
+                        doctor: doctor._id,
+                        status: "Closed",
+                        updatedAt: { $gte: tenDaysAgo },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: "%Y-%m-%d", date: "$updatedAt" } },
+                        count: { $sum: 1 },
+                    },
+                },
+            ]),
+            Appointment.aggregate([
+                { $match: { doctor: doctor._id } },
+                { $group: { _id: "$status", count: { $sum: 1 } } },
+            ]),
+            Appointment.aggregate([
+                { $match: { doctor: doctor._id } },
+                { $group: { _id: "$patient" } },
+                {
+                    $lookup: {
+                        from: "patients",
+                        localField: "_id",
+                        foreignField: "_id",
+                        as: "patientInfo",
+                    },
+                },
+                { $unwind: "$patientInfo" },
+                { $group: { _id: "$patientInfo.patientType", count: { $sum: 1 } } },
+            ]),
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: {
+                doctor: {
+                    name: doctor.user?.name,
+                    specialization: doctor.specialization,
+                },
+                counts: {
+                    queue: queueCount,
+                    consultation: consultationCount,
+                    closedLast10Days: closedLast10DaysCount,
+                    totalAppointments,
+                    totalPatients: uniquePatientIds.length,
+                },
+                charts: {
+                    last30Days: fillDailySeries(last30DaysRaw, thirtyDaysAgo),
+                    closedLast10Days: fillDailySeries(closedLast10DaysRaw, tenDaysAgo),
+                    statusBreakdown,
+                    patientTypeBreakdown,
+                },
+            },
+        });
+    } catch (error) {
+        logger.error("Error fetching doctor stats", { error: error.message, stack: error.stack });
+        return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+module.exports = { registerDoctor, getAllDoctors, getDoctorById, updateDoctor, getDoctorStats };
 
