@@ -15,6 +15,7 @@ import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../common/Pagination";
 
 const Doctors = () => {
   const [doctors, setDoctors] = useState([]);
@@ -25,6 +26,8 @@ const Doctors = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pages: 0, total: 0 });
   const navigate = useNavigate();
 
   // Format date
@@ -51,6 +54,7 @@ const Doctors = () => {
       setError(null);
 
       const response = await api.get("/api/doctor/getdoctor", {
+        params: { page, limit: 10 },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -60,6 +64,7 @@ const Doctors = () => {
       const doctorsData = data.data || data.doctors || data || [];
       setDoctors(doctorsData);
       setFilteredDoctors(doctorsData);
+      setPagination(data.meta || { page, pages: 0, total: doctorsData.length });
     } catch (err) {
       const errorMessage =
         err.response?.data?.message || err.message || "Failed to fetch doctors";
@@ -97,7 +102,7 @@ const Doctors = () => {
 
   useEffect(() => {
     fetchDoctors();
-  }, []);
+  }, [page]);
 
   // Search functionality
   useEffect(() => {
@@ -361,6 +366,7 @@ const Doctors = () => {
               </div>
             </div>
           )}
+          <Pagination {...pagination} page={page} onPageChange={setPage} />
         </div>
 
         {/* Doctor Details Modal */}

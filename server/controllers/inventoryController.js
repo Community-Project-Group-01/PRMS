@@ -60,11 +60,17 @@ const getAllInventory = async (req, res) => {
             ];
         }
 
-        const inventory = await Inventory.find(filter).sort({ brandName: 1 });
+        const page = Math.max(1, parseInt(req.query.page || "1", 10));
+        const limit = 10;
+        const [inventory, total] = await Promise.all([
+            Inventory.find(filter).sort({ brandName: 1 }).skip((page - 1) * limit).limit(limit),
+            Inventory.countDocuments(filter),
+        ]);
         return res.status(200).json({
             success: true,
             message: "Inventory fetched successfully",
             data: inventory,
+            meta: { page, limit, total, pages: Math.ceil(total / limit) },
         });
     } catch (error) {
         logger.error("Error in getAllInventory", { error: error.message, stack: error.stack });

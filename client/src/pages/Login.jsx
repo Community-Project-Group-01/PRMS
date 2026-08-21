@@ -158,7 +158,7 @@ const Login = () => {
                 type="submit"
                 variant="primary"
                 size="large"
-                className="w-full py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 bg-gradient-to-r from-[#52d4cb] to-[#399491] hover:from-[#399491] hover:to-[#52d4cb] transform hover:-translate-y-0.5"
+                className="w-full py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 hover:from-[#399491] transform hover:-translate-y-0.5"
                 loading={loading}
                 disabled={loading}>
                 {loading ? "Signing In..." : "Sign In"}

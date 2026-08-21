@@ -16,6 +16,7 @@ import { FaPills, FaFilePdf } from "react-icons/fa";
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
+import Pagination from "../common/Pagination";
 
 // Loaded on demand: @react-pdf/renderer is a heavy dependency, only needed when a prescription PDF is opened
 const PrescriptionPDFModal = lazy(() => import("./PrescriptionPDFModal"));
@@ -98,7 +99,9 @@ const PatientMedicalHistory = () => {
       });
       const data = response.data;
       setPrescriptions(data.data || []);
-      // Note: Prescription API might not return pagination meta, adjust if needed
+      if (data.meta) {
+        setPrescriptionsMeta(data.meta);
+      }
     } catch (err) {
       console.error("Error fetching prescriptions:", err);
     }
@@ -557,14 +560,11 @@ const PatientMedicalHistory = () => {
             
             {/* Pagination for Prescriptions */}
             {prescriptions.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-gray-600">
-                    Showing {prescriptions.length} prescription{prescriptions.length !== 1 ? 's' : ''}
-                  </p>
-                  {/* Note: Add proper pagination when API supports it */}
-                </div>
-              </div>
+              <Pagination
+                {...prescriptionsMeta}
+                page={prescriptionsPage}
+                onPageChange={setPrescriptionsPage}
+              />
             )}
           </div>
         )}
