@@ -34,6 +34,8 @@ const createAppoinment = async (req, res) => {
 const getAppointmentsOfDoctor = async (req, res) => {
     try {
         const { status } = req.query;
+        const page = Math.max(1, parseInt(req.query.page || "1", 10));
+        const limit = 10;
         const userId = req.user._id;
 
         const doctor = await Doctor.findOne({ user: userId });
@@ -44,7 +46,8 @@ const getAppointmentsOfDoctor = async (req, res) => {
         const query = { doctor: doctor._id };
         if (status) query.status = status;
 
-        const myAppointments = await Appointment.find(query)
+        const [myAppointments, total] = await Promise.all([
+            Appointment.find(query)
             .populate({
                 path: "patient",
                 populate: {
@@ -52,7 +55,11 @@ const getAppointmentsOfDoctor = async (req, res) => {
                     select: "name email", // populate only name and email
                 },
             })
-            .lean();
+            .lean()
+            .skip((page - 1) * limit)
+            .limit(limit),
+            Appointment.countDocuments(query),
+        ]);
 
         if (!myAppointments.length) {
             return res.status(200).json({ success: true, message: "No appointments found", data: [] });
@@ -62,6 +69,7 @@ const getAppointmentsOfDoctor = async (req, res) => {
             success: true,
             message: "Appointments fetched successfully",
             data: myAppointments,
+            meta: { page, limit, total, pages: Math.ceil(total / limit) },
         });
     } catch (error) {
         logger.error("Error fetching doctor appointments", { error: error.message, stack: error.stack });

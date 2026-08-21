@@ -14,6 +14,7 @@ import Spinner from "../common/Spinner";
 import api from "../../api/client";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import Pagination from "../common/Pagination";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -24,6 +25,8 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pages: 0, total: 0 });
   const [showDoctorModal, setShowDoctorModal] = useState(false);
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
@@ -66,6 +69,7 @@ const Patients = () => {
       setError(null);
 
       const response = await api.get("/api/patient/getPatient", {
+        params: { page, limit: 10 },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -76,6 +80,7 @@ const Patients = () => {
       const patientsData = data.data || data.patients || data || [];
       setPatients(patientsData);
       setFilteredPatients(patientsData);
+      setPagination(data.meta || { page, pages: 0, total: patientsData.length });
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
@@ -116,7 +121,7 @@ const Patients = () => {
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [page]);
 
   // Search functionality
   useEffect(() => {
@@ -453,12 +458,13 @@ const Patients = () => {
               </div>
             </div>
           )}
+          <Pagination {...pagination} page={page} onPageChange={setPage} />
         </div>
 
         {/* Patient Details Modal */}
         {selectedPatient && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide">
               {/* Modal Header */}
               <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">
@@ -621,7 +627,7 @@ const Patients = () => {
         {/* Doctor Selection Modal */}
         {showDoctorModal && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide">
               {/* Modal Header */}
               <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">

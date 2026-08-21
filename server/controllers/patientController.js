@@ -1,9 +1,5 @@
-const bcrypt = require("bcrypt");
 const { User } = require("../models/User");
 const { Patient } = require("../models/Patient");
-const { generatePassword } = require("../utils/generatePassword");
-const { generateToken } = require("../utils/generateToken");
-const { sendCredentialsEmail } = require("../utils/emailService");
 const logger = require("../utils/logger");
 const mongoose = require("mongoose");
 
@@ -28,16 +24,10 @@ const registerPatient = async (req, res) => {
             return res.status(409).json({ success: false, message: "Email or NIC already registered" });
         }
 
-        // // Generate and hash password
-        // const plainPassword = await generatePassword(name, nic, email);
-
-        // const hashedPassword = await bcrypt.hash(plainPassword, 10);
-
         // Create user - role is always "patient" here, never taken from the request body
         const newUser = new User({
             name,
             email,
-            password: "none",
             role: "patient",
         });
         await newUser.save();
@@ -47,29 +37,19 @@ const registerPatient = async (req, res) => {
             nic,
             user: newUser._id,
             patientType,
+            gender,
             allergies,
             contact,
             address,
             dob,
+            age,
         });
         await newPatient.save();
-
-        //         // Send email with plain password
-        //         await sendMail(email, "Your Account Credentials", `
-        //       Hi ${name},
-
-        //       Your patient account has been created successfully.
-
-        //     Email: ${email}
-        // Password: ${plainPassword}
-
-        //       Please keep your password safe.
-        //     `);
 
         // Respond
         return res.status(201).json({
             success: true,
-            message: "Patient registered successfully, credentials sent via email",
+            message: "Patient registered successfully!",
             data: {
                 id: newPatient._id,
                 name,
@@ -154,17 +134,22 @@ const updatePatient = async (req, res) => {
 
 const getAllPatients = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const page = Math.max(1, parseInt(req.query.page || "1", 10));
+        const limit = 10;
 
-        const patients = await Patient.find()
+        const [patients, total] = await Promise.all([
+            Patient.find()
             .skip((page - 1) * limit)
-            .limit(Number(limit))
-            .populate({ path: "user", select: "-password -__v" });
+            .limit(limit)
+            .populate({ path: "user", select: "-password -__v" }),
+            Patient.countDocuments(),
+        ]);
 
         return res.status(200).json({
             success: true,
             message: "Patients fetched successfully",
-            data: patients
+            data: patients,
+            meta: { page, limit, total, pages: Math.ceil(total / limit) },
         });
     } catch (error) {
         logger.error("Error in getAllPatients", { error: error.message, stack: error.stack });

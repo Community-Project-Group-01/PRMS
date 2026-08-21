@@ -15,6 +15,7 @@ import Spinner from "../common/Spinner";
 import api from "../../api/client";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../common/Pagination";
 
 const Inventory = () => {
   const [items, setItems] = useState([]);
@@ -25,6 +26,8 @@ const Inventory = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pages: 0, total: 0 });
   const navigate = useNavigate();
 
   const formatDate = (dateString) => {
@@ -42,12 +45,15 @@ const Inventory = () => {
       setRefreshing(true);
       setError(null);
 
-      const response = await api.get("/api/inventory");
+      const response = await api.get("/api/inventory", {
+        params: { search: searchTerm, page, limit: 10 },
+      });
       const data = response.data;
 
       const inventoryData = data.data || data || [];
       setItems(inventoryData);
       setFilteredItems(inventoryData);
+      setPagination(data.meta || { page, pages: 0, total: inventoryData.length });
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
@@ -63,7 +69,7 @@ const Inventory = () => {
 
   useEffect(() => {
     fetchInventory();
-  }, []);
+  }, [page]);
 
   // Search functionality
   useEffect(() => {
@@ -374,12 +380,13 @@ const Inventory = () => {
               </div>
             </div>
           )}
+          <Pagination {...pagination} page={page} onPageChange={setPage} />
         </div>
 
         {/* Item Details Modal */}
         {selectedItem && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="bg-white rounded-2xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-hide">
               {/* Modal Header */}
               <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-6 rounded-t-2xl">
                 <div className="flex items-center justify-between">

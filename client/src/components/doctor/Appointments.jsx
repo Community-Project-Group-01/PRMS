@@ -15,12 +15,15 @@ import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../common/Pagination";
 
 const Appointments = () => {
   const [appointments, setAppointments] = useState([]);
   const [status, setStatus] = useState("Queue");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pages: 0, total: 0 });
 
   const navigate = useNavigate();
 
@@ -29,12 +32,13 @@ const Appointments = () => {
     setError("");
     try {
       const res = await api.get(
-        `/api/appointment/getMyAppointments?status=${status}`
+        `/api/appointment/getMyAppointments?status=${status}&page=${page}&limit=10`
       );
       const data = res.data;
 
       if (data.success) {
         setAppointments(data.data || []);
+        setPagination(data.meta || { page, pages: 0, total: (data.data || []).length });
       } else {
         setError(data.message || "Failed to fetch appointments");
       }
@@ -73,8 +77,12 @@ const Appointments = () => {
   const handleStatus = (state) => setStatus(state);
 
   useEffect(() => {
-    fetchAppointments();
+    setPage(1);
   }, [status]);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [status, page]);
 
   const statusConfig = {
     Queue: {
@@ -343,6 +351,7 @@ const Appointments = () => {
                 </div>
               );
             })}
+          <Pagination {...pagination} page={page} onPageChange={setPage} />
         </div>
       </div>
     </div>

@@ -175,17 +175,22 @@ const updateDoctor = async (req, res) => {
 
 const getAllDoctors = async (req, res) => {
     try {
-        const { page = 1, limit = 10 } = req.query;
+        const page = Math.max(1, parseInt(req.query.page || "1", 10));
+        const limit = 10;
 
-        const doctors = await Doctor.find()
+        const [doctors, total] = await Promise.all([
+            Doctor.find()
             .skip((page - 1) * limit)
-            .limit(Number(limit))
-            .populate({ path: "user", select: "-password -__v" });
+            .limit(limit)
+            .populate({ path: "user", select: "-password -__v" }),
+            Doctor.countDocuments(),
+        ]);
 
         return res.status(200).json({
             success: true,
             message: "Doctors fetched successfully",
-            data: doctors
+            data: doctors,
+            meta: { page, limit, total, pages: Math.ceil(total / limit) },
         });
     } catch (error) {
         logger.error("Error in getAllDoctors", { error: error.message, stack: error.stack });

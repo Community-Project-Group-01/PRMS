@@ -5,13 +5,21 @@ const logger = require("../utils/logger");
 const getPrescriptionsByPatient = async (req, res) => {
   try {
     const { id: patientId } = req.params;
-    const prescriptions = await Prescription.find({
+    const page = Math.max(1, parseInt(req.query.page || "1", 10));
+    const limit = 10;
+    const filter = {
       patient: patientId,
       isDeleted: false,
-    })
-      .populate("doctor")
-      .populate("patient")
-      .populate("medicalRecord", "_id createdAt");
+    };
+    const [prescriptions, total] = await Promise.all([
+      Prescription.find(filter)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .populate({path: "doctor", populate: {path : "user"}})
+      .populate({path: "patient", populate: {path : "user"}})
+      .populate("medicalRecord", "_id createdAt"),
+      Prescription.countDocuments(filter),
+    ]);
     if (prescriptions.length === 0) {
       return res
         .status(404)
@@ -21,6 +29,7 @@ const getPrescriptionsByPatient = async (req, res) => {
       success: true,
       message: "Available prescriptions",
       data: prescriptions,
+      meta: { page, limit, total, pages: Math.ceil(total / limit) },
     });
   } catch (error) {
     logger.error("Get Prescription Error", { error: error.message, stack: error.stack });
@@ -90,14 +99,24 @@ const getPrescriptionsByDoctor = async (req, res) => {
         .status(404)
         .json({ success: false, message: "Doctor not found." });
     }
-    const myPrescriptions = await Prescription.find({ doctor: doctor._id });
+    const page = Math.max(1, parseInt(req.query.page || "1", 10));
+    const limit = 10;
+    const filter = { doctor: doctor._id, isDeleted: false };
+    const [myPrescriptions, total] = await Promise.all([
+      Prescription.find(filter).skip((page - 1) * limit).limit(limit),
+      Prescription.countDocuments(filter),
+    ]);
     if (myPrescriptions.length == 0) {
       return res
         .status(200)
         .json({ success: true, message: "No Prsecription Available." });
     }
 
-    return res.status(200).json({ success: true, data: myPrescriptions });
+    return res.status(200).json({
+      success: true,
+      data: myPrescriptions,
+      meta: { page, limit, total, pages: Math.ceil(total / limit) },
+    });
   } catch (error) {
     logger.error("getPrescriptionsByDoctor Error", { error: error.message, stack: error.stack });
     return res
