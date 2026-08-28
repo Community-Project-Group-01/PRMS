@@ -5,7 +5,15 @@ import Spinner from "../common/Spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 
-const INVENTORY_TYPES = ["Drug", "Medical Device", "Consumable", "Equipment", "Other"];
+const INVENTORY_TYPES = [
+  "Medicine",
+  "Material",
+  "Medical Device",
+  "Consumable",
+  "Equipment",
+  "Diagnostic",
+  "Other",
+];
 
 const emptyForm = {
   genericName: "",
@@ -22,7 +30,7 @@ const emptyForm = {
   regiType: "",
   dossierNo: "",
   stockLevel: "",
-  inventoryType: "Drug",
+  inventoryType: "Medicine",
 };
 
 const InventoryForm = () => {
@@ -46,6 +54,7 @@ const InventoryForm = () => {
         setFetching(true);
         const res = await api.get(`/api/inventory/${id}`);
         const item = res.data?.data || res.data;
+        const normalizedType = item.inventoryType === "Drug" ? "Medicine" : (item.inventoryType || "Medicine");
         setFormData({
           genericName: item.genericName || "",
           brandName: item.brandName || "",
@@ -61,7 +70,7 @@ const InventoryForm = () => {
           regiType: item.regiType || "",
           dossierNo: item.dossierNo || "",
           stockLevel: item.stockLevel ?? "",
-          inventoryType: item.inventoryType || "Drug",
+          inventoryType: normalizedType,
         });
       } catch (error) {
         const message =

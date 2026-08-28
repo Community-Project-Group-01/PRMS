@@ -48,20 +48,49 @@ const createInventory = async (req, res) => {
     }
 };
 
-// Get all inventory items (optional ?search= by brand/generic name)
+// Get all inventory items (optional ?search=, ?type=, ?stock=, ?page=, ?limit=)
 const getAllInventory = async (req, res) => {
     try {
-        const { search } = req.query;
+        const { search, type, inventoryType, stock, stockStatus } = req.query;
         const filter = {};
-        if (search) {
+
+        // Search by brand name, generic name, manufacturer, agent, or registration number
+        if (search && search.trim()) {
+            const queryRegex = { $regex: search.trim(), $options: "i" };
             filter.$or = [
-                { brandName: { $regex: search, $options: "i" } },
-                { genericName: { $regex: search, $options: "i" } },
+                { brandName: queryRegex },
+                { genericName: queryRegex },
+                { manufacturer: queryRegex },
+                { agent: queryRegex },
+                { regNo: queryRegex },
             ];
         }
 
+        // Filter by inventory classification / type
+        const selectedType = type || inventoryType;
+        if (selectedType && selectedType.toLowerCase() !== "all") {
+            if (selectedType.toLowerCase() === "medicine") {
+                filter.inventoryType = { $in: ["Medicine", "Drug"] };
+            } else {
+                filter.inventoryType = { $regex: new RegExp(`^${selectedType.trim()}$`, "i") };
+            }
+        }
+
+        // Filter by stock level status
+        const selectedStock = stock || stockStatus;
+        if (selectedStock && selectedStock.toLowerCase() !== "all") {
+            const normalizedStock = selectedStock.toLowerCase().replace(/[-_ ]/g, "");
+            if (normalizedStock === "instock" || normalizedStock === "in") {
+                filter.stockLevel = { $gt: 0 };
+            } else if (normalizedStock === "lowstock" || normalizedStock === "low") {
+                filter.stockLevel = { $gt: 0, $lte: 10 };
+            } else if (normalizedStock === "outofstock" || normalizedStock === "out") {
+                filter.stockLevel = { $lte: 0 };
+            }
+        }
+
         const page = Math.max(1, parseInt(req.query.page || "1", 10));
-        const limit = 10;
+        const limit = Math.max(1, parseInt(req.query.limit || "10", 10));
         const [inventory, total] = await Promise.all([
             Inventory.find(filter).sort({ brandName: 1 }).skip((page - 1) * limit).limit(limit),
             Inventory.countDocuments(filter),

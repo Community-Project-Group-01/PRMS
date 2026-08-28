@@ -2,7 +2,16 @@ const Joi = require("joi");
 
 const text = (max = 100) => Joi.string().trim().min(1).max(max);
 
-const INVENTORY_TYPES = ["Drug", "Medical Device", "Consumable", "Equipment", "Other"];
+const INVENTORY_TYPES = [
+    "Medicine",
+    "Material",
+    "Medical Device",
+    "Consumable",
+    "Equipment",
+    "Diagnostic",
+    "Other",
+    "Drug",
+];
 
 const createInventorySchema = Joi.object({
     genericName: text(150).required(),

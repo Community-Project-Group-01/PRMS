@@ -19,12 +19,24 @@ const inventorySchema = new mongoose.Schema(
         inventoryType: {
             type: String,
             required: true,
-            enum: ["Drug", "Medical Device", "Consumable", "Equipment", "Other"],
-            default: "Drug",
+            enum: [
+                "Medicine",
+                "Material",
+                "Medical Device",
+                "Consumable",
+                "Equipment",
+                "Diagnostic",
+                "Other",
+                "Drug",
+            ],
+            default: "Medicine",
+            index: true,
         },
     },
     { timestamps: true }
 );
+
+inventorySchema.index({ stockLevel: 1 });
 
 const Inventory = mongoose.model("Inventory", inventorySchema);
 module.exports = { Inventory };
