@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Inventory } = require("../models/Inventory");
 const logger = require("../utils/logger");
 
-const REQUIRED_FIELDS = [
+const MEDICINE_REQUIRED_FIELDS = [
     "genericName",
     "brandName",
     "dosage",
@@ -18,23 +18,56 @@ const REQUIRED_FIELDS = [
     "dossierNo",
 ];
 
-const UPDATABLE_FIELDS = [...REQUIRED_FIELDS, "stockLevel", "inventoryType"];
+const ALL_FIELDS = [
+    "genericName",
+    "brandName",
+    "dosage",
+    "packSize",
+    "packType",
+    "manufacturer",
+    "country",
+    "agent",
+    "regDate",
+    "regNo",
+    "schedule",
+    "regiType",
+    "dossierNo",
+    "stockLevel",
+    "inventoryType",
+];
+
+const UPDATABLE_FIELDS = [...ALL_FIELDS];
 
 // Create new inventory item
 const createInventory = async (req, res) => {
     try {
-        const missing = REQUIRED_FIELDS.filter((field) => !req.body[field]);
-        if (missing.length > 0) {
-            return res.status(400).json({
-                success: false,
-                message: `Missing required fields: ${missing.join(", ")}`,
-            });
+        const type = req.body.inventoryType || "Medicine";
+        const isMedicine = type === "Medicine" || type === "Drug";
+
+        if (isMedicine) {
+            const missing = MEDICINE_REQUIRED_FIELDS.filter((field) => !req.body[field] || !String(req.body[field]).trim());
+            if (missing.length > 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Missing required fields for medicine: ${missing.join(", ")}`,
+                });
+            }
+        } else {
+            if (!req.body.brandName || !String(req.body.brandName).trim()) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Item name (brandName) is required",
+                });
+            }
         }
 
-        const inventory = new Inventory({
+        const itemData = {
             ...req.body,
             stockLevel: req.body.stockLevel ?? 0,
-        });
+            regDate: req.body.regDate ? new Date(req.body.regDate) : undefined,
+        };
+
+        const inventory = new Inventory(itemData);
         await inventory.save();
 
         return res.status(201).json({
@@ -139,7 +172,13 @@ const updateInventory = async (req, res) => {
 
         const updates = {};
         for (const field of UPDATABLE_FIELDS) {
-            if (req.body[field] !== undefined) updates[field] = req.body[field];
+            if (req.body[field] !== undefined) {
+                if (field === "regDate") {
+                    updates[field] = req.body[field] ? new Date(req.body[field]) : null;
+                } else {
+                    updates[field] = req.body[field];
+                }
+            }
         }
 
         const item = await Inventory.findByIdAndUpdate(id, { $set: updates }, {

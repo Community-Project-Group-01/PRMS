@@ -704,14 +704,16 @@ const Inventory = () => {
                       </p>
                       <div>{renderStockBadge(selectedItem.stockLevel)}</div>
                     </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Dosage / Form
-                      </p>
-                      <p className="text-base font-semibold text-gray-800">
-                        {selectedItem.dosage || "N/A"}
-                      </p>
-                    </div>
+                    {selectedItem.dosage && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Dosage / Form
+                        </p>
+                        <p className="text-base font-semibold text-gray-800">
+                          {selectedItem.dosage}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -719,98 +721,120 @@ const Inventory = () => {
                 <div>
                   <h3 className="text-base font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
                     <FiTag className="text-primary" />
-                    Packaging & Manufacturer
+                    Packaging & Supplier Details
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Pack Size
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.packSize || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Pack Type
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.packType || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Manufacturer
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.manufacturer || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Country of Origin
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.country || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">Agent</p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.agent || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Schedule
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.schedule || "N/A"}
-                      </p>
-                    </div>
+                    {selectedItem.packSize && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Pack Size
+                        </p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.packSize}
+                        </p>
+                      </div>
+                    )}
+                    {selectedItem.packType && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Pack Type
+                        </p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.packType}
+                        </p>
+                      </div>
+                    )}
+                    {selectedItem.manufacturer && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Manufacturer
+                        </p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.manufacturer}
+                        </p>
+                      </div>
+                    )}
+                    {selectedItem.country && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Country of Origin
+                        </p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.country}
+                        </p>
+                      </div>
+                    )}
+                    {selectedItem.agent && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">Supplier / Agent</p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.agent}
+                        </p>
+                      </div>
+                    )}
+                    {selectedItem.schedule && (
+                      <div className="space-y-1">
+                        <p className="text-xs font-medium text-gray-500">
+                          Schedule
+                        </p>
+                        <p className="text-sm font-semibold text-gray-800">
+                          {selectedItem.schedule}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
-                {/* Registration Details */}
-                <div>
-                  <h3 className="text-base font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
-                    Registration Information
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Registration No.
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800 font-mono">
-                        {selectedItem.regNo || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Registration Date
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {formatDate(selectedItem.regDate)}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Registration Type
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800">
-                        {selectedItem.regiType || "N/A"}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-gray-500">
-                        Dossier No.
-                      </p>
-                      <p className="text-sm font-semibold text-gray-800 font-mono">
-                        {selectedItem.dossierNo || "N/A"}
-                      </p>
+                {/* Registration Details (if any present) */}
+                {(selectedItem.regNo || selectedItem.regDate || selectedItem.regiType || selectedItem.dossierNo) && (
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-800 mb-4 pb-2 border-b border-gray-100">
+                      Registration Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                      {selectedItem.regNo && (
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-500">
+                            Registration / Serial No.
+                          </p>
+                          <p className="text-sm font-semibold text-gray-800 font-mono">
+                            {selectedItem.regNo}
+                          </p>
+                        </div>
+                      )}
+                      {selectedItem.regDate && (
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-500">
+                            Registration Date
+                          </p>
+                          <p className="text-sm font-semibold text-gray-800">
+                            {formatDate(selectedItem.regDate)}
+                          </p>
+                        </div>
+                      )}
+                      {selectedItem.regiType && (
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-500">
+                            Registration Type
+                          </p>
+                          <p className="text-sm font-semibold text-gray-800">
+                            {selectedItem.regiType}
+                          </p>
+                        </div>
+                      )}
+                      {selectedItem.dossierNo && (
+                        <div className="space-y-1">
+                          <p className="text-xs font-medium text-gray-500">
+                            Dossier No.
+                          </p>
+                          <p className="text-sm font-semibold text-gray-800 font-mono">
+                            {selectedItem.dossierNo}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
+                )}
 
                 {/* Modal Footer Buttons */}
                 <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
