@@ -4,7 +4,17 @@ import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { FiLayers, FiPackage, FiInfo } from "react-icons/fi";
+import {
+  FiLayers,
+  FiPackage,
+  FiInfo,
+  FiArrowLeft,
+  FiAlertCircle,
+  FiSave,
+  FiPlus,
+  FiTag,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 const INVENTORY_TYPES = [
   "Medicine",
@@ -526,7 +536,7 @@ const InventoryForm = () => {
   }, [currentType]);
 
   const inputClass =
-    "w-full border border-gray-300 rounded-lg p-2.5 text-sm transition duration-150 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary bg-white text-gray-800";
+    "w-full px-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border border-gray-200 rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary hover:border-gray-300";
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -673,37 +683,52 @@ const InventoryForm = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white shadow-md rounded-2xl border border-gray-100 overflow-hidden">
+        <div className="bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden">
           {/* Header Banner */}
-          <div className="bg-gradient-to-r from-primary to-secondary px-8 py-6 text-white">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-xl backdrop-blur-xs">
-                <FiPackage className="w-6 h-6" />
+          <div className="bg-gradient-to-r from-primary to-secondary px-8 py-7 text-white relative">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-xs flex items-center justify-center shadow-xs">
+                  <FiPackage className="w-7 h-7 text-white" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold">
+                      {isEditMode ? "Edit Inventory Item" : "Add Inventory Item"}
+                    </h2>
+                    <span className="bg-white/25 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                      Inventory Portal
+                    </span>
+                  </div>
+                  <p className="text-sm text-white/90 mt-1">
+                    {isEditMode
+                      ? `Update specifications and stock level for ${formData.brandName || "item"}`
+                      : "Fill in the required specifications to register a new stock item"}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold">
-                  {isEditMode ? "Edit Inventory Item" : "Add Inventory Item"}
-                </h2>
-                <p className="text-sm text-white/90 mt-0.5">
-                  {isEditMode
-                    ? `Update specifications and stock for ${formData.brandName || "item"}`
-                    : "Fill in the required information to register a new inventory item"}
-                </p>
-              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="self-start sm:self-center flex items-center gap-1.5 text-xs font-medium text-white/90 bg-white/15 hover:bg-white/25 px-3.5 py-2 rounded-xl backdrop-blur-xs transition duration-200">
+                <FiArrowLeft className="w-4 h-4" />
+                Back to Inventory
+              </button>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-8 space-y-6">
+          <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-8">
             {/* 1. FIRST FIELD: INVENTORY TYPE SELECTION */}
-            <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <label className="text-sm font-bold text-gray-800 flex items-center gap-2">
                   <FiLayers className="text-primary w-4 h-4" />
                   Inventory Classification / Type{" "}
                   <span className="text-red-500">*</span>
                 </label>
-                <span className="text-xs text-primary font-medium bg-white px-2.5 py-1 rounded-full border border-primary/20">
-                  Step 1: Select Type to customize input fields
+                <span className="text-xs text-primary font-semibold bg-white px-3 py-1 rounded-full border border-primary/20 shadow-2xs">
+                  Select Type to customize required fields
                 </span>
               </div>
 
@@ -711,7 +736,7 @@ const InventoryForm = () => {
                 name="inventoryType"
                 value={formData.inventoryType}
                 onChange={handleTypeChange}
-                className="w-full border-2 border-primary/30 rounded-lg p-3 text-sm font-semibold text-gray-800 bg-white shadow-xs focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all cursor-pointer">
+                className="w-full border-2 border-primary/30 rounded-xl p-3 text-sm font-semibold text-gray-800 bg-white shadow-xs focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer">
                 {INVENTORY_TYPES.map((type) => (
                   <option key={type} value={type}>
                     {type}
@@ -720,13 +745,14 @@ const InventoryForm = () => {
               </select>
 
               {errors.inventoryType && (
-                <p className="text-red-500 text-xs mt-1.5 font-medium">
+                <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                  <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
                   {errors.inventoryType}
                 </p>
               )}
 
               {/* Dynamic Type Description Banner */}
-              <div className="flex items-center gap-2 mt-3 text-xs text-gray-600">
+              <div className="flex items-center gap-2 text-xs text-gray-600 pt-1">
                 <FiInfo className="text-primary w-4 h-4 flex-shrink-0" />
                 <span>
                   <strong>{typeConfig.title}:</strong> {typeConfig.description}.
@@ -740,14 +766,18 @@ const InventoryForm = () => {
             </div>
 
             {/* 2. DYNAMIC INPUT FIELDS GRID */}
-            <div>
-              <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-5">
-                <h3 className="text-base font-semibold text-gray-800">
-                  {typeConfig.title}
-                </h3>
-                <span className="text-xs text-gray-500">
-                  <span className="text-red-500 font-bold">*</span> Indicates
-                  required field
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                    <FiTag className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-bold text-gray-800">
+                    {typeConfig.title}
+                  </h3>
+                </div>
+                <span className="text-xs text-gray-400 font-medium">
+                  <span className="text-red-500 font-bold">*</span> Mandatory fields
                 </span>
               </div>
 
@@ -772,13 +802,14 @@ const InventoryForm = () => {
                         onChange={handleChange}
                         className={`${inputClass} ${
                           errors[field.name]
-                            ? "border-red-400 focus:ring-red-400 focus:border-red-400"
+                            ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
                             : ""
                         }`}
                       />
 
                       {errors[field.name] && (
-                        <p className="text-red-500 text-xs mt-1 font-medium">
+                        <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                          <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
                           {errors[field.name]}
                         </p>
                       )}
@@ -794,27 +825,22 @@ const InventoryForm = () => {
                 type="button"
                 onClick={() => navigate(-1)}
                 size="medium"
-                className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-6 py-2.5 rounded-xl transition duration-200">
+                className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-6 py-2.5 rounded-xl transition duration-200 flex items-center justify-center gap-2">
+                <FiArrowLeft className="w-4 h-4" />
                 Cancel
               </Button>
 
-              <Button
-                type="submit"
-                disabled={loading}
-                size="medium"
-                className={`w-full sm:w-auto text-white font-semibold px-8 py-2.5 rounded-xl shadow-md transition duration-200 ${
-                  loading
-                    ? "bg-secondary-dark opacity-70 cursor-not-allowed"
-                    : "bg-primary hover:bg-primary-dark"
-                }`}>
-                {loading
-                  ? isEditMode
-                    ? "Saving Changes..."
-                    : "Registering Item..."
-                  : isEditMode
-                  ? "Update Inventory"
-                  : "Add to Inventory"}
-              </Button>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  loading={loading}
+                  size="medium"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+                  {isEditMode ? <FiSave className="w-4 h-4" /> : <FiPlus className="w-4 h-4" />}
+                  {isEditMode ? "Update Inventory" : "Add to Inventory"}
+                </Button>
+              </div>
             </div>
           </form>
         </div>
@@ -824,3 +850,4 @@ const InventoryForm = () => {
 };
 
 export default InventoryForm;
+
