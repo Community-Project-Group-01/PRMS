@@ -51,9 +51,9 @@ const Footer = () => {
             <div className="flex items-center space-x-3 mb-4">
               <FaHospital className="w-8 h-8 text-secondary-dark" />
               <div>
-                <h2 className="text-2xl font-bold">University Health System</h2>
+                <h2 className="text-2xl font-bold">PRMS</h2>
                 <p className="text-white/80 text-sm">
-                  Comprehensive Patient Care
+                  Patient Records Management Systems
                 </p>
               </div>
             </div>
@@ -91,7 +91,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-white/20 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-white/70 text-sm text-center md:text-left">
-            © {new Date().getFullYear()} University Health System. All rights
+            © {new Date().getFullYear()} Patient Records Management System. All rights
             reserved.
           </p>
           <nav className="flex space-x-6 mt-4 md:mt-0">
