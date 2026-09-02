@@ -32,9 +32,9 @@ const Navbar = () => {
               <FaHospital className="w-8 h-8 text-primary-dark" />
               <div>
                 <h1 className="text-xl font-bold leading-tight">
-                  University Health
+                  PRMS
                 </h1>
-                <p className="text-xs text-secondary-dark">Patient Records</p>
+                <p className="text-xs text-secondary-dark">Patient Records Management System</p>
               </div>
             </div>
           </div>
