@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { FiEdit2, FiSave, FiX, FiMail, FiUser, FiLock, FiShield } from "react-icons/fi";
+import {
+  FiEdit2,
+  FiSave,
+  FiX,
+  FiMail,
+  FiUser,
+  FiLock,
+  FiShield,
+  FiAlertCircle,
+  FiCheckCircle,
+  FiArrowLeft,
+  FiKey,
+} from "react-icons/fi";
 import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import { useAppContext } from "../../context/AppContext";
@@ -18,9 +30,6 @@ const Profile = () => {
   });
   const [errors, setErrors] = useState({});
 
-  const inputClass =
-    "w-full border border-primary rounded-lg p-2 transition duration-150 focus:outline-none focus:ring-1 focus:ring-primary-dark focus:border-primary-dark";
-
   const startEditing = () => {
     setFormData({
       name: userDetails?.name || "",
@@ -33,14 +42,21 @@ const Profile = () => {
   };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: "" });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required.";
-    if (!emailValidator(formData.email)) newErrors.email = "Valid email is required.";
+    if (!formData.name.trim()) newErrors.name = "Full name is required.";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email address is required.";
+    } else if (!emailValidator(formData.email)) {
+      newErrors.email = "Please enter a valid email address.";
+    }
 
     if (formData.password || formData.confirmPassword) {
       if (formData.password.length < 8) {
@@ -57,7 +73,10 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
+    if (!validateForm()) {
+      toast.error("Please correct the errors before submitting.");
+      return;
+    }
 
     setSaving(true);
     try {
@@ -65,11 +84,11 @@ const Profile = () => {
       if (formData.password) payload.password = formData.password;
 
       const res = await api.post("/api/admin/update", payload);
-      toast.success(res.data?.message || "Profile updated successfully");
+      toast.success(res.data?.message || "Profile updated successfully!");
       await refreshUser();
       setEditing(false);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      toast.error(error.response?.data?.message || "Failed to update profile.");
     } finally {
       setSaving(false);
     }
@@ -77,152 +96,294 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <Spinner size="large" variant="primary" showText text="Loading profile..." />
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Spinner size="large" variant="primary" showText text="Loading administrator profile..." />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-8">
-            <div className="flex items-center gap-5">
-              <div className="w-20 h-20 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-bold">
-                {userDetails?.name?.charAt(0).toUpperCase() || "A"}
+    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          {/* Header Banner */}
+          <div className="bg-gradient-to-r from-primary to-secondary text-white px-8 py-7 relative">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-3xl font-bold backdrop-blur-xs shadow-xs">
+                  {userDetails?.name?.charAt(0).toUpperCase() || "A"}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-2xl font-bold">{userDetails?.name || "Administrator"}</h2>
+                    <span className="bg-white/25 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                      {userDetails?.role || "Admin"}
+                    </span>
+                  </div>
+                  <p className="text-sm text-white/90 mt-1 flex items-center gap-1.5">
+                    <FiMail className="w-3.5 h-3.5" />
+                    {userDetails?.email}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold">{userDetails?.name}</h2>
-                <p className="text-white/90">{userDetails?.email}</p>
-                <span className="inline-block mt-2 px-3 py-1 bg-white/20 rounded-full text-xs font-semibold uppercase tracking-wide">
-                  {userDetails?.role}
-                </span>
-              </div>
+
+              {!editing ? (
+                <Button
+                  variant="outline"
+                  size="medium"
+                  onClick={startEditing}
+                  className="self-start sm:self-center flex items-center gap-2 bg-white text-primary hover:bg-white/90 border-transparent shadow-xs font-semibold px-5 py-2 rounded-xl transition duration-200">
+                  <FiEdit2 className="w-4 h-4" />
+                  Edit Profile
+                </Button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setEditing(false)}
+                  className="self-start sm:self-center flex items-center gap-1.5 text-xs font-medium text-white/90 bg-white/15 hover:bg-white/25 px-3.5 py-2 rounded-xl backdrop-blur-xs transition duration-200">
+                  <FiArrowLeft className="w-4 h-4" />
+                  Cancel Editing
+                </button>
+              )}
             </div>
           </div>
 
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             {!editing ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600 flex items-center gap-2">
-                      <FiUser className="text-primary" /> Full Name
-                    </p>
-                    <p className="text-lg text-gray-800 font-semibold">
-                      {userDetails?.name || "N/A"}
-                    </p>
+              <div className="space-y-6">
+                {/* Account Details Tile */}
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 border-b border-gray-100 pb-3">
+                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                      <FiUser className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-base font-bold text-gray-800">
+                      Administrator Information
+                    </h3>
                   </div>
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600 flex items-center gap-2">
-                      <FiMail className="text-primary" /> Email Address
-                    </p>
-                    <p className="text-lg text-gray-800 font-semibold">
-                      {userDetails?.email || "N/A"}
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-gray-600 flex items-center gap-2">
-                      <FiShield className="text-primary" /> Role
-                    </p>
-                    <p className="text-lg text-gray-800 font-semibold capitalize">
-                      {userDetails?.role || "N/A"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex justify-end pt-6 border-t border-gray-200">
-                  <Button
-                    variant="primary"
-                    size="medium"
-                    className="bg-primary hover:bg-primary-dark flex items-center gap-2"
-                    onClick={startEditing}>
-                    <FiEdit2 className="w-4 h-4" />
-                    Edit Profile
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block mb-1 text-primary-dark">Full Name</label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                    {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
-                  </div>
-                  <div>
-                    <label className="block mb-1 text-primary-dark">Email</label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={inputClass}
-                    />
-                    {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                    <div className="p-4 rounded-xl bg-gray-50/70 border border-gray-100 space-y-1">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <FiUser className="text-primary w-3.5 h-3.5" /> Full Name
+                      </p>
+                      <p className="text-base text-gray-800 font-bold">
+                        {userDetails?.name || "N/A"}
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-gray-50/70 border border-gray-100 space-y-1">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <FiMail className="text-primary w-3.5 h-3.5" /> Email Address
+                      </p>
+                      <p className="text-base text-gray-800 font-bold truncate">
+                        {userDetails?.email || "N/A"}
+                      </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-gray-50/70 border border-gray-100 space-y-1">
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <FiShield className="text-primary w-3.5 h-3.5" /> System Role
+                      </p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary uppercase">
+                          {userDetails?.role || "Admin"}
+                        </span>
+                        <span className="text-xs text-gray-500 font-medium">Full Access</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-200">
-                  <p className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                    <FiLock className="text-primary" /> Change Password (optional)
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* System Permissions Note */}
+                <div className="bg-primary/5 rounded-2xl border border-primary/20 p-5 flex items-start gap-4">
+                  <div className="p-2 bg-primary/10 rounded-xl text-primary flex-shrink-0">
+                    <FiShield className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-800">
+                      System Administrative Privileges
+                    </h4>
+                    <p className="text-xs text-gray-600 mt-1 leading-relaxed">
+                      You are authenticated as an Administrator. This role grants complete management access over doctor accounts, patient registry, medical inventory classifications, and global system configuration.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Account Information Section */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                        <FiUser className="w-4 h-4" />
+                      </div>
+                      <h3 className="text-base font-bold text-gray-800">
+                        Account Information
+                      </h3>
+                    </div>
+                    <span className="text-xs text-gray-400 font-medium">
+                      <span className="text-red-500 font-bold">*</span> Mandatory fields
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block mb-1 text-primary-dark">New Password</label>
-                      <input
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Leave blank to keep current password"
-                        className={inputClass}
-                      />
-                      {errors.password && (
-                        <p className="text-red-500 text-sm">{errors.password}</p>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Administrator Full Name <span className="text-red-500 font-bold">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <FiUser className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="text"
+                          name="name"
+                          value={formData.name}
+                          onChange={handleChange}
+                          placeholder="Administrator Name"
+                          className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            errors.name
+                              ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
+                              : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
+                          }`}
+                        />
+                      </div>
+                      {errors.name && (
+                        <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                          <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          {errors.name}
+                        </p>
                       )}
                     </div>
+
                     <div>
-                      <label className="block mb-1 text-primary-dark">
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        Email Address <span className="text-red-500 font-bold">*</span>
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <FiMail className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="email"
+                          name="email"
+                          value={formData.email}
+                          onChange={handleChange}
+                          placeholder="admin@hospital.lk"
+                          className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            errors.email
+                              ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
+                              : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
+                          }`}
+                        />
+                      </div>
+                      {errors.email && (
+                        <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                          <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          {errors.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security Section */}
+                <div className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                        <FiKey className="w-4 h-4" />
+                      </div>
+                      <h3 className="text-base font-bold text-gray-800">
+                        Security & Credentials
+                      </h3>
+                    </div>
+                    <span className="text-xs text-gray-400">
+                      Leave blank to keep existing password
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                        New Password
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <FiLock className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="password"
+                          name="password"
+                          value={formData.password}
+                          onChange={handleChange}
+                          placeholder="••••••••"
+                          className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            errors.password
+                              ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
+                              : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
+                          }`}
+                        />
+                      </div>
+                      {errors.password && (
+                        <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                          <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          {errors.password}
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-semibold text-gray-700 mb-1.5">
                         Confirm New Password
                       </label>
-                      <input
-                        type="password"
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={inputClass}
-                      />
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                          <FiLock className="w-4 h-4" />
+                        </div>
+                        <input
+                          type="password"
+                          name="confirmPassword"
+                          value={formData.confirmPassword}
+                          onChange={handleChange}
+                          placeholder="••••••••"
+                          className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                            errors.confirmPassword
+                              ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
+                              : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
+                          }`}
+                        />
+                      </div>
                       {errors.confirmPassword && (
-                        <p className="text-red-500 text-sm">{errors.confirmPassword}</p>
+                        <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
+                          <FiAlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                          {errors.confirmPassword}
+                        </p>
                       )}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+                {/* Form Actions Footer */}
+                <div className="flex flex-col-reverse sm:flex-row justify-between items-center gap-3 pt-6 border-t border-gray-100">
                   <Button
                     type="button"
                     variant="outline"
                     size="medium"
-                    className="flex items-center gap-2"
+                    className="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-6 py-2.5 rounded-xl transition duration-200 flex items-center justify-center gap-2 border-transparent"
                     onClick={() => setEditing(false)}
                     disabled={saving}>
                     <FiX className="w-4 h-4" />
                     Cancel
                   </Button>
+
                   <Button
                     type="submit"
                     variant="primary"
                     size="medium"
-                    className="bg-primary hover:bg-primary-dark flex items-center gap-2"
+                    className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold px-8 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
                     loading={saving}>
                     <FiSave className="w-4 h-4" />
                     Save Changes
@@ -238,3 +399,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
