@@ -21,6 +21,7 @@ import Button from "../common/Button";
 import Spinner from "../common/Spinner";
 import api from "../../api/client";
 import { useNavigate } from "react-router-dom";
+import Pagination from "../common/Pagination";
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -31,6 +32,8 @@ const Patients = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [fetchingDetails, setFetchingDetails] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({ page: 1, pages: 0, total: 0 });
   const navigate = useNavigate();
 
   // Calculate age from date of birth
@@ -68,6 +71,7 @@ const Patients = () => {
       setError(null);
 
       const response = await api.get("/api/patient/getPatient", {
+        params: { page, limit: 10 },
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -78,6 +82,7 @@ const Patients = () => {
       const patientsData = data.data || data.patients || data || [];
       setPatients(patientsData);
       setFilteredPatients(patientsData);
+      setPagination(data.meta || { page, pages: 0, total: patientsData.length });
     } catch (err) {
       const errorMessage =
         err.response?.data?.message ||
@@ -118,7 +123,7 @@ const Patients = () => {
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [page]);
 
   // Search functionality
   useEffect(() => {
@@ -406,6 +411,7 @@ const Patients = () => {
               </div>
             </div>
           )}
+          <Pagination {...pagination} page={page} onPageChange={setPage} />
         </div>
 
         {/* Patient Details Modal */}
