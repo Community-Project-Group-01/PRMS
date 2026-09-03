@@ -211,7 +211,7 @@ const DoctorForm = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="E.g. Dr. Kasun Perera"
-                      className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
+                      className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 cursor-pointer ${
                         errors.name
                           ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
                           : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
@@ -315,24 +315,25 @@ const DoctorForm = () => {
                     <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                       <FiBriefcase className="w-4 h-4" />
                     </div>
-                    <input
-                      type="text"
+                    <select
                       name="specialization"
-                      list="specialization-list"
                       value={formData.specialization}
                       onChange={handleChange}
-                      placeholder="E.g. General Medicine, Cardiology"
                       className={`w-full pl-10 pr-4 py-2.5 bg-gray-50/50 hover:bg-white focus:bg-white border rounded-xl text-sm text-gray-800 transition-all duration-200 focus:outline-none focus:ring-2 ${
                         errors.specialization
                           ? "border-red-400 focus:ring-red-400/30 focus:border-red-500 bg-red-50/20"
                           : "border-gray-200 focus:ring-primary/20 focus:border-primary hover:border-gray-300"
                       }`}
-                    />
-                    <datalist id="specialization-list">
+                    >
+                      <option value="" disabled>
+                        Select a specialization
+                      </option>
                       {SPECIALIZATION_SUGGESTIONS.map((item) => (
-                        <option key={item} value={item} />
+                        <option key={item} value={item}>
+                          {item}
+                        </option>
                       ))}
-                    </datalist>
+                    </select>
                   </div>
                   {errors.specialization && (
                     <p className="text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1">
